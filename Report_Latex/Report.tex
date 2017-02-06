@@ -38,12 +38,41 @@
 
 
 \section{Project Description}
-\subsection{Main goals and strategy}
+\subsection{Main goals}
+The project will deliver a distributed chat system consisting of a server and two clients that run in two different domains (e.g. mobile and web). In addition to an interim project report and a final project report. The following are the mandatory features of the chat system. The mandatory features ensures that the project meets the project requirements outlined in the requirement specification given to the project team.
+
+++Insert feature list table/Milestones
+\begin{itemize}
+\item Send text based messages to one or more users
+\item Receive text based messages from one or more users
+\item Search for other users on the server
+\item Secure communication between users
+\item User Registration (New User)
+\item User authentication (Log in / Log out)
+\item Chat client for mobile
+\item Chat client for desktop
+\end{itemize}
 
 
-\subsection{Project timetable}
+In addition, one of the main aims is to employ rigorous testing. The test driven development approach is the project team’s ideal approach to testing. The main testing strategies will be unit testing. As well as, functional, regression and integration testing of the clients and server software.
 
-\subsection{Advancement}
+
+Additionally, the project aims to equip the project team with the experience of working on a distributed software project as members of a team. To become au fait with some of the tools currently used in industry. Especially in the areas of team collaboration and software versioning.
+
+\subsection{Implementation Strategy}
+Following the project initiation, the project team undertook background research to understand how to implement a distributed client server chat application. Some of the strategies investigated were Restful APIs, utilizing web frameworks such as Django and as well as socket programming. It was ultimately decided to employ sockets to develop the application. Since the other methods employ several layers of abstraction. Socket programming allows the project team to implement network communication as close as possible to the operating system without rewriting the network stack.
+
+
+The background research culminated in the development of a basic client server prototype written in python. This has enabled the project team to grasp how programming with sockets work and provides a very clear understanding of how to achieve the implementation requirements.
+
+
+Moving forward the project team will employ an agile or rather its own incarnation of an agile software development approach. In the project team’s planned approached, a subset of features to be implemented will be selected from the prioritized list of features on a weekly basis. These features will then be implemented, tested and documented. Being ready for review at the next weekly team meeting. As the project progresses each week new features maybe added and some features deleted as the project team sees fit.
+
+
+As noted earlier, the project consists of three components. The project team will be implementing the server in python as a multithreaded socket server. The first client will be implemented as a mobile application for the android platform and the second client will be developed as a web application. One of the planned approaches is to split the project team into sub-teams in order to implement feature sets for each component concurrently during the weekly coding sprints. 
+
+
+During each weekly coding sprint, the rational for implementation will be documented. Since an agile approach is being taken. The documentation will also be updated each week to include updated UML diagrams, updated use cases and updated test cases. This documentation including the interim report will form the basis for the final report.
 
 
 
