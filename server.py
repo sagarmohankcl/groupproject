@@ -1,3 +1,4 @@
+
 #synmolia chat server web 
 
 import sys 
@@ -66,8 +67,6 @@ def broadcast(s,sock,message):
 if __name__ == "__main__":
 
 	sys.exit(chat_server())
-
-
 
 
 
