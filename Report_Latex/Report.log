@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.17 (MiKTeX 2.9.6210 64-bit) (preloaded format=pdflatex 2017.2.1)  6 FEB 2017 12:53
+This is pdfTeX, Version 3.14159265-2.6-1.40.17 (MiKTeX 2.9.6210 64-bit) (preloaded format=pdflatex 2017.2.1)  7 FEB 2017 10:54
 entering extended mode
 **./Report.tex
 (Report.tex
@@ -609,8 +609,7 @@ Package: float 2001/11/08 v1.3d Float enhancements (AL)
 \float@box=\box38
 \@float@everytoks=\toks30
 \@floatcapt=\box39
-)
-No file Report.aux.
+) (Report.aux)
 \openout1 = `Report.aux'.
 
 LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 19.
@@ -625,6 +624,7 @@ LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 19.
 LaTeX Font Info:    ... okay on input line 19.
 LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 19.
 LaTeX Font Info:    ... okay on input line 19.
+
 ("C:\Program Files\MiKTeX 2.9\tex\context\base\supp-pdf.mkii"
 [Loading MPS to PDF converter (version 2006.09.02).]
 \scratchcounter=\count117
@@ -687,11 +687,8 @@ G,.JBIG2,.JB2,.eps]
 Package caption Info: Begin \AtBeginDocument code.
 Package caption Info: float package is loaded.
 Package caption Info: End \AtBeginDocument code.
-
-
-LaTeX Warning: Reference `Table: feat' on page 1 undefined on input line 44.
-
 LaTeX Font Info:    Try loading font information for U+msa on input line 48.
+
 ("C:\Program Files\MiKTeX 2.9\tex\latex\amsfonts\umsa.fd"
 File: umsa.fd 2013/01/14 v3.01 AMS symbols A
 )
@@ -699,12 +696,7 @@ LaTeX Font Info:    Try loading font information for U+msb on input line 48.
 
 ("C:\Program Files\MiKTeX 2.9\tex\latex\amsfonts\umsb.fd"
 File: umsb.fd 2013/01/14 v3.01 AMS symbols B
-)
-
-LaTeX Warning: Reference `Table: feat_opt' on page 1 undefined on input line 73
-.
-
-[1
+) [1
 
 {C:/ProgramData/MiKTeX/2.9/pdftex/config/pdftex.map}] [2]
 LaTeX Font Info:    Try loading font information for OMS+cmr on input line 117.
@@ -715,33 +707,26 @@ File: omscmr.fd 2014/09/29 v2.5h Standard LaTeX font definitions
 )
 LaTeX Font Info:    Font shape `OMS/cmr/m/n' in size <10.95> not available
 (Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 117.
- [3] [4] (Report.aux)
-
-LaTeX Warning: There were undefined references.
-
-
-LaTeX Warning: Label(s) may have changed. Rerun to get cross-references right.
-
- )
+ [3] [4] (Report.aux) )
 (\end occurred inside a group at level 1)
 
 ### simple group (level 1) entered at line 1061 ({)
 ### bottom level 
 Here is how much of TeX's memory you used:
- 7170 strings out of 493333
- 101420 string characters out of 3139195
- 194622 words of memory out of 3000000
+ 7172 strings out of 493333
+ 101440 string characters out of 3139195
+ 194638 words of memory out of 3000000
  10590 multiletter control sequences out of 15000+200000
  10105 words of font info for 38 fonts, out of 3000000 for 9000
  1141 hyphenation exceptions out of 8191
- 42i,9n,40p,693b,4561s stack positions out of 5000i,500n,10000p,200000b,50000s
+ 42i,9n,40p,693b,4559s stack positions out of 5000i,500n,10000p,200000b,50000s
 <C:/Program Files/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmb
 x10.pfb><C:/Program Files/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmbx12.pfb>
 <C:/Program Files/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmr10.pfb><C:/Progr
 am Files/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmr12.pfb><C:/Program Files/
 MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmr17.pfb><C:/Program Files/MiKTeX 2.
 9/fonts/type1/public/amsfonts/cm/cmsy10.pfb>
-Output written on Report.pdf (4 pages, 91700 bytes).
+Output written on Report.pdf (4 pages, 91942 bytes).
 PDF statistics:
  39 PDF objects out of 1000 (max. 8388607)
  0 named destinations out of 1000 (max. 500000)
