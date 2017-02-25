@@ -1,8 +1,13 @@
 #!/usr/bin/env python
+'''
+Created on Wed Feb 22 12:32:34 2017
 
+@author https://pythonprogramming.net/change-show-new-frame-tkinter/
+
+'''
 
 from Tkinter import *  # python3
-from scroll2 import VerticalScrolledFrame    # python
+from contacts_window import VerticalScrolledFrame    # python
 from chat_window import *
 from queue import Queue
 
