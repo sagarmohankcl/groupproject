@@ -21,6 +21,7 @@ class Client(object):
     received_messages = queue.Queue()     
     sent_messages = queue.Queue()
     name = ['mary','john','joe']
+    chat_button_user =''
 
     options = {'login': {'OPTION':'LOGIN','USER':username,'PASSWORD':password},
                'query': {'OPTION': 'QUERY_USER','USER':username},
@@ -38,9 +39,10 @@ class Client(object):
         thread.start_new_thread(self.local_server,())
         self.tab_controller = ttk.Notebook(self.window)
         #self.main = ttk.Frame(self.tab_controller)
+        #self.contacts_tab()
         self.login_tab()
         self.main_tab()
-        self.window.after(5000, func=self.gui_update)
+        self.window.after(2000, func=self.gui_update)
         'Window main loop'
         self.window.mainloop()
 
@@ -92,7 +94,73 @@ class Client(object):
         for key in self.tab_name_user.keys():           
             if str(tab) ==  str(key):
                 user = (self.tab_name_user.get(key))  
-        self.get_text(user)        
+        self.get_text(user)
+
+    def contacts_tab(self):
+        'Displays the tab with contacts'
+        self.contacts = ttk.Frame(self.tab_controller, name='contacts')
+        self.tab_controller.add(self.contacts, text='Contacts')
+        contacts_frame = ttk.Frame(self.contacts)
+        contacts_frame.grid(column=0, row=0, padx=80, pady=4, columnspan=2, sticky='newss')
+
+        'Add listbox to the frame'
+        listbox_frame = ttk.Frame(self.contacts)
+        listbox_frame.grid(column=0, row=0, padx=80, pady=10)
+        contacts_listbox = ttk.Treeview(listbox_frame)
+        contacts_listbox.grid(column=0,row=1, pady=4, ipadx=2, ipady=2, sticky='w')
+        #Scroll bar need to check
+        #list_scroll = ttk.Scrollbar(self.contacts)       
+        #list_scroll.configure(command=contacts_listbox.yview)
+        #contacts_listbox.configure(yscrollcommand=list_scroll.set)
+
+        'Add Search'
+        self.search_entry = ttk.Entry(listbox_frame)
+        self.search_entry.grid(column=0, row=2, padx=1, pady=3,sticky='w')
+        search_button = ttk.Button(listbox_frame, text='Search')
+        search_button.grid(column=0,row=2,  sticky='e')
+        search_button.bind("<Button-1>",self.contacts_search)
+        search_button.bind("<Return>",self.contacts_search)
+
+    def contacts_search(self,event):
+        'Gets the text from the search field onthe login tab'
+        'Calls the connect_remote server method'
+        'Returns the result'
+        results ={}
+        user = self.search_entry.get()
+        self.chat_button_user = user
+        if user != '':
+            self.options['query']['USER'] = user            
+            results = (self.connect_remote_server(self.options['query']))
+            
+            if results['CONNECTION']!= '':
+                'Pop up window to notify the user'
+                notify = Toplevel()
+                notify.title('Search User')
+                msg = Message(notify, text='User found',width=80)
+                msg.pack()
+                login_frame = ttk.Frame(notify)
+                login_frame.pack()
+                chat_button = ttk.Button(login_frame, text='Message User',width=15)
+                chat_button.pack()
+                chat_button.bind("<Button-1>",self.chat_button_clicked)
+                contacts_add = ttk.Button(login_frame, text='Add Contact',width=15)
+                contacts_add.pack()
+                
+                
+            else:                
+                'Pop up window to notify the user'
+                notify = Toplevel()
+                notify.title('Search User')
+                msg = ttk.Label(notify, text='User not found')
+                msg.pack()
+            self.search_entry.delete(0,END)
+
+    def chat_button_clicked(self,event):
+        'Open a new chat tab'
+        self.chat_tab(self.chat_button_user,self.chat_button_user)
+        
+
+
 
     def login_tab(self):
         'Displays login Form '
@@ -145,21 +213,25 @@ class Client(object):
         'Hides the login tab'
         'Calls the Main tab'
         username = self.username_entry.get()
-        password = self.password_entry.get()
+        password = self.password_entry.get()        
         if username != '' and password != '':
             self.options['login']['USER'] = username
             self.options['login']['PASSWORD'] = password
             if self.connect_remote_server(self.options['login']):             
-                self.tab_controller.hide(self.login)
+                self.contacts_tab()
+                self.tab_controller.hide(self.login)                
             else:
-                print('Log in failed')
+                self.username_entry.delete(0,END)
+                self.password_entry.delete(0,END)
+                'Pop up window to notify the user'
+                notify = Toplevel()
+                notify.title('Failed Login')
+                msg = Message(notify, text='Login Failed')
+                msg.pack()
+                      
             
-            
-                #else:
-                #self.username_entry.delete(0,END)
-                #self.password_entry.delete(0,END)
-            #sent_data['USER']= self.username
-            #sent_data['MSG'] = message
+                
+                
 
     def gui_update(self):
         'Method called every second to update the window'
@@ -202,6 +274,9 @@ class Client(object):
                 if data:
                     data = json.loads(data.decode('utf-8'))
                     return data
+                else:
+                    #check this line if other things are broken
+                    return False
 
     def local_server(self):
         'Initialise the instance with an IP address and port number'

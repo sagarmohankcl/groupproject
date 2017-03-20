@@ -96,18 +96,20 @@ class Chatserver(object):
 
     def query_user(self,received_dict):
         'Search for a user to the database'
-        details = {'username':'','password':'','connection':'','date':''}        
+        details = {'USER':'','PASSWORD':'','CONNECTION':'','DATE':''}        
         
         con = sqlite3.connect('chatserver.db')
         cur = con.cursor()
-        cur.execute("SELECT username, password, connection, date FROM users where username = ?",
-                    (received_dict['USER'].lower(),))
-        for record in cur:
-            details['USER'] = record[0]
-            details['PASSWORD'] = record[1]
-            details['CONNECTION'] = record[2]
-            details['DATE'] = record[3]
-        
+        try:
+            cur.execute("SELECT username, password, connection, date FROM users where username = ?",
+                        (received_dict['USER'].lower(),))
+            for record in cur:
+                details['USER'] = record[0]
+                details['PASSWORD'] = record[1]
+                details['CONNECTION'] = record[2]
+                details['DATE'] = record[3]
+        except:
+            return False
     
         con.close()        
         return details
