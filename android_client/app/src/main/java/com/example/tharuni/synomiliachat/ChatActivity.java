@@ -1,5 +1,6 @@
 package com.example.tharuni.synomiliachat;
 
+import android.app.Activity;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -12,6 +13,7 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.content.Intent;
 
 import com.example.tharuni.synomiliachat.ChatFunctionality.ChatAdapter;
 import com.example.tharuni.synomiliachat.ChatFunctionality.ChatMessage;
@@ -36,11 +38,22 @@ public class ChatActivity extends AppCompatActivity {
         protected void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
             setContentView(R.layout.activity_chat);
+            Button backBtn = (Button) findViewById(R.id.backBtn);
             initControls();
             MakingConnection mc = new MakingConnection("10.40.143.175",5000);
             mc.execute();
 
-        }
+            backBtn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(ChatActivity.this, MainActivity.class);
+                    startActivity(intent);
+                }
+            });
+                }
+
+
+
 
         @Override
         public boolean onCreateOptionsMenu(Menu menu) {
