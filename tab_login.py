@@ -32,19 +32,19 @@ class Client(object):
 
     def __init__(self):
         'This method initialises the basic window'
-        self.received_messages = queue.Queue()
-        self.sent_messages = queue.Queue()
+        #self.received_messages = queue.Queue()
+        #self.sent_messages = queue.Queue()
         self.window = Tk()
         self.window.title("Synomilia Chat")
         thread.start_new_thread(self.local_server,())
         self.tab_controller = ttk.Notebook(self.window)
-        #self.main = ttk.Frame(self.tab_controller)
-        #self.contacts_tab()
+        
         self.login_tab()
         self.main_tab()
-        self.window.after(2000, func=self.gui_update)
-        'Window main loop'
-        self.window.mainloop()
+        'Schedule gui_update to run on the main thread in one second'
+        self.window.after(1000, self.gui_update)
+        
+        
 
     def main_tab(self):
         'This method contains the controls for the main tab'
@@ -61,7 +61,7 @@ class Client(object):
         
         
 
-    def chat_tab(self,tab_name,name):
+    def chat_tab(self,name):
         'This method has the controls and calls the methods for the chat window'        
         tab_name = ttk.Frame(self.tab_controller,name=name)        
         self.tab_controller.add(tab_name, text= name)
@@ -157,7 +157,7 @@ class Client(object):
 
     def chat_button_clicked(self,event):
         'Open a new chat tab'
-        self.chat_tab(self.chat_button_user,self.chat_button_user)
+        self.chat_tab(self.chat_button_user)
         
 
 
@@ -234,27 +234,27 @@ class Client(object):
                 
 
     def gui_update(self):
-        'Method called every second to update the window'
-        'Check if message not empty'
-        'Check if tab exists for user or not'
-        'Create new tab or update existing tab'
-        display_message = {}        
+        'Method called every second to update the window'        
                 
-        while True:            
-            if not self.received_messages.empty():
-                
-                received_message = self.received_messages.get_nowait()
-                user = received_message['USER']
-                msg = received_message['MSG']
-                
-                if user not in self.list_of_tabs.keys():                    
-                    self.chat_tab(user,user)
-                    self.update_window(user,msg)
-                    print(self.list_of_tabs)
-                else:
-                    self.update_window(user,msg)
+        try:            
+            received_message = self.received_messages.get_nowait()
+            user = received_message['USER']
+            msg = received_message['MSG']
+
+            'Check if tab exists for user or not'
+            'Create new tab or update existing tab'  
+            if user not in self.list_of_tabs.keys():                    
+                self.chat_tab(user)
+                self.update_window(user,msg)
+                print(self.list_of_tabs)
             else:
-                return
+                self.update_window(user,msg)
+        except: #QueueEmpty: Need to find the exception to catch it here
+            'Its ok if theres no data in the queue'
+            'Will check again later'
+            pass
+        'Schedule gui_update again in one second'
+        self.window.after(1000, self.gui_update)
 
     
 
@@ -411,16 +411,9 @@ class Client(object):
 def run():
         
     chat = Client()
-    
-   
-    
-    'If user details correct start local server to listen'
-    '''if chat.connect_remote_server('marc','password'):
-        thread.start_new_thread(chat.local_server,())
-    while True:
-        if not chat.received_messages.empty():
-            pass
-            #chat.chat_window()'''
+    'Start mainloop'
+    chat.window.mainloop()   
+ 
            
                        
 
