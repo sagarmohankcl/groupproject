@@ -118,15 +118,16 @@ class Chatserver(object):
     def new_user(self, received_dict):
         'Adds a user to the database'
         user = received_dict["USER"].lower()
+        print received_dict#["USER"]
         dt = str(datetime.datetime.now())        
-        con = sqlite3.connect('chatserver.db')
-        cur = con.cursor()
-        try:            
+        try: 
+            con = sqlite3.connect('chatserver.db')
+            cur = con.cursor()
             cur.execute("INSERT INTO users VALUES (?,?,?,?)",(received_dict['USER'].lower(),
                                                               received_dict['PASSWORD'],
                                                               received_dict['CONNECTION'],
                                                               dt))        
-            con.commit()            
+            con.commit()      
         except:
             return False
         con.close()
@@ -153,8 +154,10 @@ class Chatserver(object):
     def login(self,received_dict):
         'Logs in users'
         user = self.query_user(received_dict)
-        if user['PASSWORD'] == received_dict['PASSWORD']:         
-            return self.update_user(received_dict)    
+        print user  #---------------
+        if user['PASSWORD'] == received_dict['PASSWORD']: 
+            print 'logged in' #---------------------        
+            return self.update_user(received_dict)              
         else:
             return False
         

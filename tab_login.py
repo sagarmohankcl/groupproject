@@ -2,17 +2,19 @@ import socket
 import json
 import threading
 import thread
-import queue
-from tkinter import *
-import tkinter as tk
-from tkinter import ttk
+import Queue as queue
+from Tkinter import *
+#import tkinter as tk
+#from tkinter 
+import ttk
+from PIL import Image, ImageTk
 import time
 
 
 class Client(object):
     'Chat application Client'
-    username = 'marc'
-    password ='password'
+    username = ''
+    password =''
     l =[]    
     user_tabs_list = {}
     user_send_list = {}
@@ -173,7 +175,8 @@ class Client(object):
         'Add Icon'
         login_icon_frame = ttk.Frame(self.login)
         login_icon_frame.grid(column=0,row=0,padx=75)
-        login_icon = PhotoImage(file='chaticon.png')
+        #login_icon = PhotoImage(file='chaticon.png')
+        login_icon = ImageTk.PhotoImage(Image.open('chat-2-icon.png'))
         login_icon_label = Label(login_icon_frame, image=login_icon)
         login_icon_label.image = login_icon
         login_icon_label.grid(column=0,row=1,pady=15, sticky='w')
@@ -190,14 +193,14 @@ class Client(object):
         self.password_entry = ttk.Entry(credential_frame, show="*")
         self.password_entry.grid(column=2, row=2, pady=3,sticky=E)
 
-        newuser_label = ttk.Label(credential_frame, text='New User:')
-        newuser_label.grid(column=1, row=4, sticky='w')
-        newuser_checkbutton = ttk.Checkbutton(credential_frame,
-                                              variable=newuser_var,
-                                              offvalue=0,
-                                              onvalue=1)
+        #newuser_label = ttk.Label(credential_frame, text='New User:')
+        #newuser_label.grid(column=1, row=4, sticky='w')
+        #newuser_checkbutton = ttk.Checkbutton(credential_frame,
+        #                                     variable=newuser_var,
+        #                                      offvalue=0,
+        #                                      onvalue=1)
         
-        newuser_checkbutton.grid(column=2, row=4, sticky='w')
+        #newuser_checkbutton.grid(column=2, row=4, sticky='w')
         password_label = ttk.Label(credential_frame, text='Password:')
         password_label.grid(column=1, row=2, sticky=W)
         
@@ -206,6 +209,13 @@ class Client(object):
         submit_button.grid(column=2,row=4, columnspan=2, sticky='e')
         submit_button.bind("<Button-1>",self.login_submit)
         submit_button.bind("<Return>",self.login_submit)
+
+        register_button = ttk.Button(credential_frame, text='Register')
+        register_button.grid(column=1,row=4, columnspan=2, sticky='w')
+        register_button.bind("<Button-1>",self.register_newuser)
+        register_button.bind("<Return>",self.register_newuser)
+
+
 
     def login_submit(self,event):
         'Gets the text from the username and password field on the login tab'
@@ -223,12 +233,66 @@ class Client(object):
             else:
                 self.username_entry.delete(0,END)
                 self.password_entry.delete(0,END)
-                'Pop up window to notify the user'
+                'Pop up window to notify the user'   # make a label?-----------------
                 notify = Toplevel()
                 notify.title('Failed Login')
                 msg = Message(notify, text='Login Failed')
                 msg.pack()
-                      
+    
+    def register_newuser(self, event):
+        'Open new window and allow registration of a new user'
+        register_w = Toplevel()
+        credential_frame = ttk.LabelFrame(register_w, text='Registration new user')
+        credential_frame.grid(column=0,row=1,padx=85, pady=4, ipadx=2, ipady=2, sticky='w')
+
+        username_label = ttk.Label(credential_frame, text='Username: ')
+        username_label.grid(column=1, row=1, sticky=W)
+        self.username_entry = ttk.Entry(credential_frame)
+        self.username_entry.grid(column=2, row=1, pady=3,sticky=E)
+
+        self.password_entry_1 = ttk.Entry(credential_frame, show="*")
+        self.password_entry_1.grid(column=2, row=2, pady=3,sticky=E)
+
+        password_label_1 = ttk.Label(credential_frame, text='Password:')
+        password_label_1.grid(column=1, row=2, sticky=W)
+        
+        self.password_entry_2 = ttk.Entry(credential_frame, show="*")
+        self.password_entry_2.grid(column=2, row=3, pady=3,sticky=E)
+
+        password_label_2 = ttk.Label(credential_frame, text='Repeat password:')
+        password_label_2.grid(column=1, row=3, sticky=W)    
+
+        submit_button = ttk.Button(credential_frame, text='Submit')
+        submit_button.grid(column=2,row=4, columnspan=2, sticky='e')
+        submit_button.bind("<Button-1>",self.register_submit)
+        submit_button.bind("<Return>",self.register_submit)
+        self.tab_controller.hide(self.login)   # 
+
+    def register_submit(self,event):
+        'Gets the text from the username and password field on the login tab'
+        'Calls the connect_remote server method'
+        'Close registration window'
+        #'Hides the login tab'
+        'Calls the Main tab'
+        username = self.username_entry.get()
+        password_1 = self.password_entry_1.get() 
+        password_2 = self.password_entry_2.get() 
+
+        if username != '' and password_1 != '' and (password_1 == password_2):
+            self.options['new']['USER'] = username
+            self.options['new']['PASSWORD'] = password_1
+            if self.connect_remote_server(self.options['new']):             
+                self.contacts_tab()
+                #self.tab_controller.hide(self.login)
+                self.register_w.Close()                
+            else:
+                self.username_entry.delete(0,END)
+                self.password_entry_1.delete(0,END)
+                'Pop up window to notify the user'   # make a label?-----------------
+                notify = Toplevel()
+                notify.title('Failed Registration')
+                msg = Message(notify, text='Registration Failed')
+                msg.pack()
             
                 
                 
@@ -263,20 +327,21 @@ class Client(object):
         'Login Method'
         HOST = '127.0.0.1'
         PORT = 5001             
-        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:     
-            print(data)
-            data = json.dumps(data).encode('utf-8')        
-            s.connect((HOST, PORT))
-            s.send(data)
+        #with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s: 
+        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)    
+        print data
+        data = json.dumps(data).encode('utf-8')        
+        s.connect((HOST, PORT))
+        s.send(data)
 
-            while True:
-                data = s.recv(1024)            
-                if data:
-                    data = json.loads(data.decode('utf-8'))
-                    return data
-                else:
-                    #check this line if other things are broken
-                    return False
+        while True:
+            data = s.recv(1024)            
+            if data:
+                data = json.loads(data.decode('utf-8'))
+                return data
+            else:
+                #check this line if other things are broken
+                return False
 
     def local_server(self):
         'Initialise the instance with an IP address and port number'
