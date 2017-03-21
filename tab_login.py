@@ -9,6 +9,8 @@ from Tkinter import *
 import ttk
 from PIL import Image, ImageTk
 import time
+import encrypt_password
+from encrypt_password import *
 
 
 class Client(object):
@@ -226,7 +228,7 @@ class Client(object):
         password = self.password_entry.get()        
         if username != '' and password != '':
             self.options['login']['USER'] = username
-            self.options['login']['PASSWORD'] = password
+            self.options['login']['PASSWORD'] = encrypt(password)
             if self.connect_remote_server(self.options['login']):             
                 self.contacts_tab()
                 self.tab_controller.hide(self.login)                
@@ -280,7 +282,7 @@ class Client(object):
 
         if username != '' and password_1 != '' and (password_1 == password_2):
             self.options['new']['USER'] = username
-            self.options['new']['PASSWORD'] = password_1
+            self.options['new']['PASSWORD'] = encrypt(password_1)
             if self.connect_remote_server(self.options['new']):             
                 self.contacts_tab()
                 #self.tab_controller.hide(self.login)
