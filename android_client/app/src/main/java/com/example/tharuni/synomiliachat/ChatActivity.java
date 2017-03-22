@@ -1,5 +1,6 @@
 package com.example.tharuni.synomiliachat;
 
+import android.app.Activity;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -12,6 +13,7 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.content.Intent;
 
 import com.example.tharuni.synomiliachat.ChatFunctionality.ChatAdapter;
 import com.example.tharuni.synomiliachat.ChatFunctionality.ChatMessage;
@@ -26,114 +28,122 @@ public class ChatActivity extends AppCompatActivity {
 
 
 
-        private EditText messageET;
-        private ListView messagesContainer;
-        private Button sendBtn;
-        private ChatAdapter adapter;
-        private ArrayList<ChatMessage> chatHistory;
+    private EditText messageET;
+    private ListView messagesContainer;
+    private Button sendBtn;
+    private ChatAdapter adapter;
+    private ArrayList<ChatMessage> chatHistory;
 
-        @Override
-        protected void onCreate(Bundle savedInstanceState) {
-            super.onCreate(savedInstanceState);
-            setContentView(R.layout.activity_chat);
-            initControls();
-            MakingConnection mc = new MakingConnection("10.40.143.175",5000);
-            mc.execute();
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_chat);
+        Button backBtn = (Button) findViewById(R.id.backBtn);
+        initControls();
+        MakingConnection mc = new MakingConnection("10.40.143.175",5000);
+        mc.execute();
 
-        }
+        backBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(ChatActivity.this, MainActivity.class);
+                startActivity(intent);
+            }
+        });
+    }
 
-        @Override
-        public boolean onCreateOptionsMenu(Menu menu) {
-            // Inflate the menu; this adds items to the action bar if it is present.
-            getMenuInflater().inflate(R.menu.menu_main, menu);
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+
+        //noinspection SimplifiableIfStatement
+        if (id == R.id.action_settings) {
             return true;
         }
 
-        @Override
-        public boolean onOptionsItemSelected(MenuItem item) {
-            // Handle action bar item clicks here. The action bar will
-            // automatically handle clicks on the Home/Up button, so long
-            // as you specify a parent activity in AndroidManifest.xml.
-            int id = item.getItemId();
+        return super.onOptionsItemSelected(item);
+    }
 
-            //noinspection SimplifiableIfStatement
-            if (id == R.id.action_settings) {
-                return true;
-            }
+    private void initControls() {
+        messagesContainer = (ListView) findViewById(R.id.messagesContainer);
+        messageET = (EditText) findViewById(R.id.messageEdit);
+        sendBtn = (Button) findViewById(R.id.chatSendButton);
 
-            return super.onOptionsItemSelected(item);
-        }
+        TextView meLabel = (TextView) findViewById(R.id.meLbl);
+        RelativeLayout container = (RelativeLayout) findViewById(R.id.container);
 
-        private void initControls() {
-            messagesContainer = (ListView) findViewById(R.id.messagesContainer);
-            messageET = (EditText) findViewById(R.id.messageEdit);
-            sendBtn = (Button) findViewById(R.id.chatSendButton);
+        loadDummyHistory();
 
-            TextView meLabel = (TextView) findViewById(R.id.meLbl);
-            RelativeLayout container = (RelativeLayout) findViewById(R.id.container);
-
-            loadDummyHistory();
-
-            sendBtn.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    String messageText = messageET.getText().toString();
-                    if (TextUtils.isEmpty(messageText)) {
-                        return;
-                    }
-
-                    ChatMessage chatMessage = new ChatMessage();
-                    chatMessage.setId(122);//dummy
-                    chatMessage.setMessage(messageText);
-                    chatMessage.setDate(DateFormat.getDateTimeInstance().format(new Date()));
-                    chatMessage.setMe(true);
-
-                    messageET.setText("");
-
-                    displayMessage(chatMessage);
+        sendBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String messageText = messageET.getText().toString();
+                if (TextUtils.isEmpty(messageText)) {
+                    return;
                 }
-            });
 
+                ChatMessage chatMessage = new ChatMessage();
+                chatMessage.setId(122);//dummy
+                chatMessage.setMessage(messageText);
+                chatMessage.setDate(DateFormat.getDateTimeInstance().format(new Date()));
+                chatMessage.setMe(true);
 
-        }
+                messageET.setText("");
 
-        public void displayMessage(ChatMessage message) {
-            adapter.add(message);
-            adapter.notifyDataSetChanged();
-            scroll();
-        }
-
-        private void scroll() {
-            messagesContainer.setSelection(messagesContainer.getCount() - 1);
-        }
-
-        private void loadDummyHistory(){
-
-            chatHistory = new ArrayList<ChatMessage>();
-
-            ChatMessage msg = new ChatMessage();
-            msg.setId(1);
-            msg.setMe(false);
-            msg.setMessage("Hi");
-            msg.setDate(DateFormat.getDateTimeInstance().format(new Date()));
-            chatHistory.add(msg);
-            ChatMessage msg1 = new ChatMessage();
-            msg1.setId(2);
-            msg1.setMe(false);
-            msg1.setMessage("How r u doing???");
-            msg1.setDate(DateFormat.getDateTimeInstance().format(new Date()));
-            chatHistory.add(msg1);
-
-            adapter = new ChatAdapter(ChatActivity.this, new ArrayList<ChatMessage>());
-            messagesContainer.setAdapter(adapter);
-
-            for(int i=0; i<chatHistory.size(); i++) {
-                ChatMessage message = chatHistory.get(i);
-                displayMessage(message);
+                displayMessage(chatMessage);
             }
+        });
 
+
+    }
+
+    public void displayMessage(ChatMessage message) {
+        adapter.add(message);
+        adapter.notifyDataSetChanged();
+        scroll();
+    }
+
+    private void scroll() {
+        messagesContainer.setSelection(messagesContainer.getCount() - 1);
+    }
+
+    private void loadDummyHistory(){
+
+        chatHistory = new ArrayList<ChatMessage>();
+
+        ChatMessage msg = new ChatMessage();
+        msg.setId(1);
+        msg.setMe(false);
+        msg.setMessage("Hi");
+        msg.setDate(DateFormat.getDateTimeInstance().format(new Date()));
+        chatHistory.add(msg);
+        ChatMessage msg1 = new ChatMessage();
+        msg1.setId(2);
+        msg1.setMe(false);
+        msg1.setMessage("How r u doing???");
+        msg1.setDate(DateFormat.getDateTimeInstance().format(new Date()));
+        chatHistory.add(msg1);
+
+        adapter = new ChatAdapter(ChatActivity.this, new ArrayList<ChatMessage>());
+        messagesContainer.setAdapter(adapter);
+
+        for(int i=0; i<chatHistory.size(); i++) {
+            ChatMessage message = chatHistory.get(i);
+            displayMessage(message);
         }
 
     }
+
+}
 
 
