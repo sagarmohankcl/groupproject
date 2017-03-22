@@ -89,6 +89,8 @@ class Chatserver(object):
             result = self.update_user(received_dict)
         elif option == 'LOGIN':
             result = self.login(received_dict)
+        elif option == 'SEARCH_USER':
+            result = self.search_user(received_dict)
         else:
             return 'INVALID COMMAND'        
         return result
@@ -109,11 +111,28 @@ class Chatserver(object):
                 details['CONNECTION'] = record[2]
                 details['DATE'] = record[3]
         except:
-            return False
+            return False 
     
         con.close()        
         return details
-    
+
+
+    def search_user(self, received_dict):
+        'Search for a user in the database and return result to the client'
+        details = {'USER':'','DATE':''} 
+        con = sqlite3.connect('chatserver.db')
+        cur = con.cursor()
+        try:
+            cur.execute("SELECT username, password, connection, date FROM users where username = ?",
+                        (received_dict['USER'].lower(),))
+            for record in cur:
+                details['USER'] = record[0]
+                details['DATE'] = record[3]
+        except:
+            return False
+        con.close()
+        return details
+
 
     def new_user(self, received_dict):
         'Adds a user to the database'
@@ -163,9 +182,6 @@ class Chatserver(object):
         else:
             return False
         
-    
-    
-        
 
 def create_db():
     'Create database to be used by server'
@@ -184,9 +200,6 @@ def delete_db():
     cur.execute(""" DROP TABLE """)
     con.commit()
     con.close()
-
-    
-
 
     
 
