@@ -11,6 +11,8 @@ from PIL import Image, ImageTk
 import time
 import encrypt_password
 from encrypt_password import *
+import sqlite3
+import os.path
 
 
 class Client(object):
@@ -26,11 +28,13 @@ class Client(object):
     sent_messages = queue.Queue()
     name = ['mary','john','joe']
     chat_button_user =''
+    contact_list = {}
 
     options = {'login': {'OPTION':'LOGIN','USER':username,'PASSWORD':password},
                'query': {'OPTION': 'QUERY_USER','USER':username},
                'update': {'OPTION': 'UPDATE_USER','USER':username},
-               'new' : {'OPTION':'NEW_USER','USER': username,'PASSWORD': password}
+               'new' : {'OPTION':'NEW_USER','USER': username,'PASSWORD': password},
+               'search': {'OPTION': 'SEARCH_USER', 'USER':username}
                }
 
 
@@ -48,7 +52,6 @@ class Client(object):
         'Schedule gui_update to run on the main thread in one second'
         self.window.after(1000, self.gui_update)
         
-        
 
     def main_tab(self):
         'This method contains the controls for the main tab'
@@ -62,7 +65,6 @@ class Client(object):
         self.tab_controller.pack(expand=1, fill="both")
         #conversation_frame = ttk.LabelFrame(self.main, text=' Conversation ')
         #conversation_frame.grid(column=0, row=0, padx=8, pady=4)
-        
         
 
     def chat_tab(self,name):
@@ -100,6 +102,7 @@ class Client(object):
                 user = (self.tab_name_user.get(key))  
         self.get_text(user)
 
+
     def contacts_tab(self):
         'Displays the tab with contacts'
         self.contacts = ttk.Frame(self.tab_controller, name='contacts')
@@ -120,10 +123,11 @@ class Client(object):
         'Add Search'
         self.search_entry = ttk.Entry(listbox_frame)
         self.search_entry.grid(column=0, row=2, padx=1, pady=3,sticky='w')
-        search_button = ttk.Button(listbox_frame, text='Search')
+        search_button = ttk.Button(listbox_frame, text='Add Contact')
         search_button.grid(column=0,row=2,  sticky='e')
         search_button.bind("<Button-1>",self.contacts_search)
         search_button.bind("<Return>",self.contacts_search)
+
 
     def contacts_search(self,event):
         'Gets the text from the search field onthe login tab'
@@ -133,24 +137,24 @@ class Client(object):
         user = self.search_entry.get()
         self.chat_button_user = user
         if user != '':
-            self.options['query']['USER'] = user            
-            results = (self.connect_remote_server(self.options['query']))
+            self.options['search']['USER'] = user  
+            results = (self.connect_remote_server(self.options['search']))
             
-            if results['CONNECTION']!= '':
+            if results['USER']!= '':
                 'Pop up window to notify the user'
-                notify = Toplevel()
-                notify.title('Search User')
-                msg = Message(notify, text='User found',width=80)
-                msg.pack()
-                login_frame = ttk.Frame(notify)
-                login_frame.pack()
-                chat_button = ttk.Button(login_frame, text='Message User',width=15)
-                chat_button.pack()
-                chat_button.bind("<Button-1>",self.chat_button_clicked)
-                contacts_add = ttk.Button(login_frame, text='Add Contact',width=15)
-                contacts_add.pack()
-                
-                
+                #notify = Toplevel()
+                #notify.title('Search User')
+                #msg = Message(notify, text='User found',width=80)
+                #msg.pack()
+                #login_frame = ttk.Frame(notify)
+                #login_frame.pack()
+                #chat_button = ttk.Button(login_frame, text='Message User',width=15)
+                #chat_button.pack()
+                #chat_button.bind("<Button-1>",self.chat_button_clicked)
+                #contacts_add = ttk.Button(login_frame, text='Add Contact',width=15)
+                #contacts_add.pack()
+                #contacts_add.bind("<Button-1>",self.contacts_add_clicked)
+                result = self.add_contact(results)
             else:                
                 'Pop up window to notify the user'
                 notify = Toplevel()
@@ -159,11 +163,25 @@ class Client(object):
                 msg.pack()
             self.search_entry.delete(0,END)
 
+            
     def chat_button_clicked(self,event):
         'Open a new chat tab'
         self.chat_tab(self.chat_button_user)
-        
 
+
+    def add_contact(self, results):
+        'Add a new contact to local contact list'
+        print "try insert"
+        try: 
+            con = sqlite3.connect('client.db')
+            cur = con.cursor()  
+            cur.execute("INSERT INTO contacts VALUES (?,?)", (results['USER'].lower(), results['DATE'].lower()))
+            con.commit() 
+            print "inserted"     
+        except:
+            return False
+        con.close()
+        return True
 
 
     def login_tab(self):
@@ -218,7 +236,6 @@ class Client(object):
         register_button.bind("<Return>",self.register_newuser)
 
 
-
     def login_submit(self,event):
         'Gets the text from the username and password field on the login tab'
         'Calls the connect_remote server method'
@@ -241,6 +258,7 @@ class Client(object):
                 msg = Message(notify, text='Login Failed')
                 msg.pack()
     
+
     def register_newuser(self, event):
         'Open new window and allow registration of a new user'
         self.register_w = Toplevel()
@@ -270,6 +288,7 @@ class Client(object):
         submit_button.bind("<Return>",self.register_submit)
         self.tab_controller.hide(self.login)   # 
 
+
     def register_submit(self,event):
         'Gets the text from the username and password field on the login tab'
         'Calls the connect_remote server method'
@@ -295,13 +314,10 @@ class Client(object):
                 notify.title('Failed Registration')
                 msg = Message(notify, text='Registration Failed')
                 msg.pack()
-            
-                
-                
+                   
 
     def gui_update(self):
-        'Method called every second to update the window'        
-                
+        'Method called every second to update the window'           
         try:            
             received_message = self.received_messages.get_nowait()
             user = received_message['USER']
@@ -321,8 +337,6 @@ class Client(object):
             pass
         'Schedule gui_update again in one second'
         self.window.after(1000, self.gui_update)
-
-    
 
 
     def connect_remote_server(self,data):
@@ -344,6 +358,7 @@ class Client(object):
             else:
                 #check this line if other things are broken
                 return False
+
 
     def local_server(self):
         'Initialise the instance with an IP address and port number'
@@ -375,7 +390,6 @@ class Client(object):
 
     def client_handler(self,connected_client, client_address):
         'Send and receive data from each client that connects'        
-
         size = 1024
         result = ''
         while True:
@@ -393,8 +407,6 @@ class Client(object):
             'Need to check who the message has to go to'
             'encode and send'
                 
-            
-
             result = json.dumps(result).encode('utf-8')                
             connected_client.send(result)
             
@@ -404,7 +416,6 @@ class Client(object):
         while True:
             if not self.received_messages.empty():
                 print(self.received_messages.get_nowait())
-        
 
 
     def send_message(self,message):
@@ -415,10 +426,8 @@ class Client(object):
     def main_window(self):
         'Create main chat window'
         self.root = Tk()
-        
-        
-      
         self.root.mainloop()
+
         
     def chat_window(self):
         'GUI window to be used for chatting'
@@ -439,14 +448,11 @@ class Client(object):
         self.window.bind("<Return>",self.mouse_enter)
         
         
-
     def update_window(self,user,message):
         'Add text to the display when enter or send is pressed'
         self.user_tabs_list[user].configure(state='normal')                
         self.user_tabs_list[user].insert(END,'{}: {}\n \n'.format(user,message))        
         self.user_tabs_list[user].configure(state='disabled')
-        
-        
         
 
     def get_text(self,user):
@@ -463,27 +469,38 @@ class Client(object):
             #Add message directly to the queue instead
             self.sent_messages.put_nowait(message)
         
-            
-        
 
     def mouse_enter(self,event):
         'Used by the send button to respond to mouse and enter key events'
         self.get_text()
 
 
+def create_db():
+    'Create database to be used by client'
+    con = sqlite3.connect('client.db')
+    cur = con.cursor()
+    cur.execute(""" CREATE TABLE contacts (username string primary key, date text)""")
+    con.commit()
+    con.close()  
     
-        
-        
+def delete_db():
+    'Delete client database'
+    con = sqlite3.connect('client.db')
+    cur = con.cursor()
+    cur.execute(""" DROP TABLE """)
+    con.commit()
+    con.close()    
+                
 
 def run():
         
     chat = Client()
     'Start mainloop'
     chat.window.mainloop()   
- 
-           
-                       
+              
 
 if __name__ == "__main__":
+    #create_db()
     run()
+
     
