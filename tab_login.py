@@ -6,13 +6,11 @@ import Queue as queue
 from Tkinter import *
 #import tkinter as tk
 #from tkinter 
-import ttk
+from ttk import *
 from PIL import Image, ImageTk
 import time
-import encrypt_password
-from encrypt_password import *
-import sqlite3
-import os.path
+
+
 
 
 class Client(object):
@@ -28,31 +26,50 @@ class Client(object):
     sent_messages = queue.Queue()
     name = ['mary','john','joe']
     chat_button_user =''
-    contact_list = {}
 
     options = {'login': {'OPTION':'LOGIN','USER':username,'PASSWORD':password},
                'query': {'OPTION': 'QUERY_USER','USER':username},
                'update': {'OPTION': 'UPDATE_USER','USER':username},
-               'new' : {'OPTION':'NEW_USER','USER': username,'PASSWORD': password},
-               'search': {'OPTION': 'SEARCH_USER', 'USER':username}
+               'new' : {'OPTION':'NEW_USER','USER': username,'PASSWORD': password}
                }
 
 
     def __init__(self):
         'This method initialises the basic window'
+        self.master = Frame(name='general')
+        self.root = self.master.master  # short-cut to top-level window
+        self.master.pack()  # pack the Frame into root, defaults to side=TOP
+        self.root.title('Synomilia Chat')  # name the window
+        
+        self.demoPanel = Frame(self.master, name='demo')  # create a new frame slaved to master
+        self.demoPanel.pack()  # pack the Frame into root
+
+        # create (notebook) demo panel
+        self.tab_controller = Notebook(self.demoPanel, name='notebook',width=420, height=550)  # create the ttk.Notebook widget
+
+        # extend bindings to top level window allowing
+        #   CTRL+TAB - cycles thru tabs
+        #   SHIFT+CTRL+TAB - previous tab
+        #   ALT+K - select tab using mnemonic (K = underlined letter)
+        self.tab_controller.enable_traversal()
+
+        self.tab_controller.pack(fill=BOTH, expand=Y, padx=2, pady=3)  # add margin
+
+        #--- create description tab
+        #--- frame to hold (tab) content
+        self.login_tab() 
         #self.received_messages = queue.Queue()
         #self.sent_messages = queue.Queue()
-        self.window = Tk()
-        self.window.title("Synomilia Chat")
-        thread.start_new_thread(self.local_server,())
-        self.tab_controller = ttk.Notebook(self.window)
+        #self.window = Tk()
+        #self.window.title("Synomilia Chat")
+        #thread.start_new_thread(self.local_server,())
+        #self.tab_controller = ttk.Notebook(self.window)#,width=500, height=550)
         
-        self.login_tab()
-        self.main_tab()
-        'Schedule gui_update to run on the main thread in one second'
-        self.window.after(1000, self.gui_update)
+        #self.login_tab()
+        #self.main_tab()
+        #'Schedule gui_update to run on the main thread in one second'
+        #self.window.after(1000, self.gui_update)'''
         
-
     def main_tab(self):
         'This method contains the controls for the main tab'
         '''self.tab_controller.add(self.main, text='Main')
@@ -63,18 +80,22 @@ class Client(object):
         self.main = ttk.Frame(self.tab_controller)
         self.tab_controller.add(ttk.LabelFrame(width=500, height=550,text= ''),text= '')
         self.tab_controller.pack(expand=1, fill="both")
+        
         #conversation_frame = ttk.LabelFrame(self.main, text=' Conversation ')
         #conversation_frame.grid(column=0, row=0, padx=8, pady=4)
+
+
         
+    #def logout(self):
 
     def chat_tab(self,name):
         'This method has the controls and calls the methods for the chat window'        
-        tab_name = ttk.Frame(self.tab_controller,name=name)        
+        tab_name = Frame(self.tab_controller,name=name)        
         self.tab_controller.add(tab_name, text= name)
         'uncomment if tab needs to be active when msg received'
         #self.tab_controller.select(tab_name) take out bottom too
         self.tab_name_user[tab_name] = name
-        conversation_frame = ttk.LabelFrame(tab_name, text=' Conversation ')
+        conversation_frame = LabelFrame(tab_name, text=' Conversation ')
         conversation_frame.grid(column=0, row=0, padx=8, pady=4)
         
         display = Text(conversation_frame, bg="white", width=60, height=30, name='display')
@@ -82,10 +103,10 @@ class Client(object):
         self.user_tabs_list[name] = display
         
         'Box to type message'
-        submit_text = ttk.Entry(conversation_frame, width=60)
+        submit_text = Entry(conversation_frame, width=60)
         submit_text.grid(column=0, row=2, padx=3, pady=5, ipady=5,sticky=W)
         'Send Button'
-        send = ttk.Button(conversation_frame, text="Send")
+        send = Button(conversation_frame, text="Send")
         send.grid(column=0, row=2, padx=10,ipady=4, sticky=E)
         #check here - take out
         self.user_send_list[name] = submit_text
@@ -104,29 +125,47 @@ class Client(object):
 
 
     def contacts_tab(self):
+        
         'Displays the tab with contacts'
-        self.contacts = ttk.Frame(self.tab_controller, name='contacts')
+        self.contacts = Frame(self.tab_controller, name='contacts')
         self.tab_controller.add(self.contacts, text='Contacts')
-        contacts_frame = ttk.Frame(self.contacts)
-        contacts_frame.grid(column=0, row=0, padx=80, pady=4, columnspan=2, sticky='newss')
+        contacts_frame = Frame(self.contacts)
+        contacts_frame.grid(column=0, row=0, padx=4, pady=4, columnspan=2, sticky='newss')
+
+        'Add Icon'
+        contacts_icon_frame = Frame(self.contacts, width=180, height=180)
+        contacts_icon_frame.grid(column=0,row=0)#,padx=75)
+        #contacts_icon_frame.grid_propagate(False)
+
+        #login_icon = PhotoImage(file='chaticon.png')
+        contacts_icon = ImageTk.PhotoImage(Image.open('chat-2-icon_small.png'),width=5,height=5)
+        contacts_icon_label = Label(contacts_icon_frame, image=contacts_icon, width=5)
+        contacts_icon_label.image = contacts_icon
+        contacts_icon_label.grid(column=0,row=1,pady=2, sticky='w')
 
         'Add listbox to the frame'
-        listbox_frame = ttk.Frame(self.contacts)
-        listbox_frame.grid(column=0, row=0, padx=80, pady=10)
-        contacts_listbox = ttk.Treeview(listbox_frame)
+        listbox_frame = Frame(self.contacts)
+        listbox_frame.grid(column=0, row=1, padx=100, pady=10)
+        contacts_listbox = Treeview(listbox_frame)
         contacts_listbox.grid(column=0,row=1, pady=4, ipadx=2, ipady=2, sticky='w')
-        #Scroll bar need to check
-        #list_scroll = ttk.Scrollbar(self.contacts)       
-        #list_scroll.configure(command=contacts_listbox.yview)
-        #contacts_listbox.configure(yscrollcommand=list_scroll.set)
-
+        
         'Add Search'
-        self.search_entry = ttk.Entry(listbox_frame)
+        self.search_entry = Entry(listbox_frame)
         self.search_entry.grid(column=0, row=2, padx=1, pady=3,sticky='w')
-        search_button = ttk.Button(listbox_frame, text='Add Contact')
-        search_button.grid(column=0,row=2,  sticky='e')
+        search_button = Button(listbox_frame, text='Search')
+        search_button.grid(column=0,row=2, sticky='e')
         search_button.bind("<Button-1>",self.contacts_search)
         search_button.bind("<Return>",self.contacts_search)
+
+        'Add Logout Button'
+        logout_frame = Frame(self.contacts,width=180, height=180)
+        logout_frame.grid(column=0, row=2)#,padx=4, pady=4, columnspan=2)#, sticky='newss')
+        logout_button = Button(logout_frame, text='Logout')
+        logout_button.grid(column=0,row=3, sticky='e')
+        logout_button.bind("<Button-1>",self.logout)
+        logout_button.bind("<Return>",self.logout)
+
+
 
 
     def contacts_search(self,event):
@@ -137,80 +176,69 @@ class Client(object):
         user = self.search_entry.get()
         self.chat_button_user = user
         if user != '':
-            self.options['search']['USER'] = user  
-            results = (self.connect_remote_server(self.options['search']))
+            self.options['query']['USER'] = user            
+            results = (self.connect_remote_server(self.options['query']))
             
-            if results['USER']!= '':
+            if results['CONNECTION']!= '':
                 'Pop up window to notify the user'
-                #notify = Toplevel()
-                #notify.title('Search User')
-                #msg = Message(notify, text='User found',width=80)
-                #msg.pack()
-                #login_frame = ttk.Frame(notify)
-                #login_frame.pack()
-                #chat_button = ttk.Button(login_frame, text='Message User',width=15)
-                #chat_button.pack()
-                #chat_button.bind("<Button-1>",self.chat_button_clicked)
-                #contacts_add = ttk.Button(login_frame, text='Add Contact',width=15)
-                #contacts_add.pack()
-                #contacts_add.bind("<Button-1>",self.contacts_add_clicked)
-                result = self.add_contact(results)
+                notify = Toplevel()
+                notify.title('Search User')
+                msg = Message(notify, text='User found',width=80)
+                msg.pack()
+                login_frame = Frame(notify)
+                login_frame.pack()
+                chat_button = Button(login_frame, text='Message User',width=15)
+                chat_button.pack()
+                chat_button.bind("<Button-1>",self.chat_button_clicked)
+                contacts_add = Button(login_frame, text='Add Contact',width=15)
+                contacts_add.pack()
+                
+                
             else:                
                 'Pop up window to notify the user'
                 notify = Toplevel()
                 notify.title('Search User')
-                msg = ttk.Label(notify, text='User not found')
+                msg = Label(notify, text='User not found')
                 msg.pack()
             self.search_entry.delete(0,END)
 
-            
     def chat_button_clicked(self,event):
         'Open a new chat tab'
         self.chat_tab(self.chat_button_user)
+        
 
-
-    def add_contact(self, results):
-        'Add a new contact to local contact list'
-        print "try insert"
-        try: 
-            con = sqlite3.connect('client.db')
-            cur = con.cursor()  
-            cur.execute("INSERT INTO contacts VALUES (?,?)", (results['USER'].lower(), results['DATE'].lower()))
-            con.commit() 
-            print "inserted"     
-        except:
-            return False
-        con.close()
-        return True
 
 
     def login_tab(self):
         'Displays login Form '
+
+        frame = Frame(self.tab_controller, name='login')
+
         newuser_var = IntVar()        
-        self.login = ttk.Frame(self.tab_controller, name='login')
+        self.login = Frame(self.tab_controller, name='login')
         self.tab_controller.add(self.login, text= 'Login')
-        login_frame = ttk.Frame(self.login)
+        login_frame = Frame(self.login)
         login_frame.grid(column=0, row=0, padx=80, pady=4)
         
         'Add Icon'
-        login_icon_frame = ttk.Frame(self.login)
-        login_icon_frame.grid(column=0,row=0,padx=75)
+        login_icon_frame = Frame(self.login)
+        login_icon_frame.grid(column=0,row=0,padx=60, sticky='we')
         #login_icon = PhotoImage(file='chaticon.png')
         login_icon = ImageTk.PhotoImage(Image.open('chat-2-icon.png'))
         login_icon_label = Label(login_icon_frame, image=login_icon)
         login_icon_label.image = login_icon
-        login_icon_label.grid(column=0,row=1,pady=15, sticky='w')
+        login_icon_label.grid(column=0,row=1,padx=10,pady=15, sticky='ew')
 
         'Add labels and buttons'
-        credential_frame = ttk.LabelFrame(self.login, text='Login')
-        credential_frame.grid(column=0,row=1,padx=85, pady=4, ipadx=2, ipady=2, sticky='w')
+        self.credential_frame = LabelFrame(self.login, text='Login')#, height=50, width=100)
+        self.credential_frame.grid(column=0,row=1,padx=105, pady=4, ipadx=2, ipady=2, sticky='w')
 
-        username_label = ttk.Label(credential_frame, text='Username: ')
+        username_label = Label(self.credential_frame, text='Username: ')
         username_label.grid(column=1, row=1, sticky=W)
-        self.username_entry = ttk.Entry(credential_frame)
+        self.username_entry = Entry(self.credential_frame)
         self.username_entry.grid(column=2, row=1, pady=3,sticky=E)
 
-        self.password_entry = ttk.Entry(credential_frame, show="*")
+        self.password_entry = Entry(self.credential_frame, show="*")
         self.password_entry.grid(column=2, row=2, pady=3,sticky=E)
 
         #newuser_label = ttk.Label(credential_frame, text='New User:')
@@ -221,19 +249,24 @@ class Client(object):
         #                                      onvalue=1)
         
         #newuser_checkbutton.grid(column=2, row=4, sticky='w')
-        password_label = ttk.Label(credential_frame, text='Password:')
+        password_label = Label(self.credential_frame, text='Password:')
         password_label.grid(column=1, row=2, sticky=W)
         
         
-        submit_button = ttk.Button(credential_frame, text='Submit')
+        submit_button = Button(self.credential_frame, text='Submit')
         submit_button.grid(column=2,row=4, columnspan=2, sticky='e')
         submit_button.bind("<Button-1>",self.login_submit)
         submit_button.bind("<Return>",self.login_submit)
 
-        register_button = ttk.Button(credential_frame, text='Register')
+        register_button = Button(self.credential_frame, text='Register')
         register_button.grid(column=1,row=4, columnspan=2, sticky='w')
         register_button.bind("<Button-1>",self.register_newuser)
         register_button.bind("<Return>",self.register_newuser)
+
+        self.alert_message = StringVar()
+        self.alert_label = Label(self.credential_frame, textvariable=self.alert_message, foreground='red')
+        self.alert_label.grid(columnspan=3)
+
 
 
     def login_submit(self,event):
@@ -245,49 +278,63 @@ class Client(object):
         password = self.password_entry.get()        
         if username != '' and password != '':
             self.options['login']['USER'] = username
-            self.options['login']['PASSWORD'] = encrypt(password)
+            self.options['login']['PASSWORD'] = password
             if self.connect_remote_server(self.options['login']):             
                 self.contacts_tab()
                 self.tab_controller.hide(self.login)                
             else:
-                self.username_entry.delete(0,END)
-                self.password_entry.delete(0,END)
-                'Pop up window to notify the user'   # make a label?-----------------
-                notify = Toplevel()
-                notify.title('Failed Login')
-                msg = Message(notify, text='Login Failed')
-                msg.pack()
-    
+                #alert_label = ttk.Label(self.credential_frame, text='Username or password mismatching')
+                #alert_label.grid(columnspan=3)
+                self.alert_message.set('Username or password mismatching')
+                #self.username_entry.delete(0,END)
+                #self.password_entry.delete(0,END)
+                #'Pop up window to notify the user'   # make a label?-----------------
+                #notify = Toplevel()
+                #notify.title('Failed Login')
+                #msg = Message(notify, text='Login Failed')
+                #msg.pack()
+        else:
+            self.alert_message.set('Username or password missing')
+            #alert_label = ttk.Label(self.credential_frame, text='Username or password missing')
+            #alert_label.grid(columnspan=3)
 
+    
+    def logout(self,event):
+        self.tab_controller.hide(self.contacts) 
+        self.login_tab()
+
+
+
+
+    
     def register_newuser(self, event):
         'Open new window and allow registration of a new user'
         self.register_w = Toplevel()
-        credential_frame = ttk.LabelFrame(self.register_w, text='Registration new user')
-        credential_frame.grid(column=0,row=1,padx=85, pady=4, ipadx=2, ipady=2, sticky='w')
+        self.credential_frame_R = LabelFrame(self.register_w, text='Registration new user')
+        self.credential_frame_R.grid(column=0,row=1,padx=85, pady=4, ipadx=2, ipady=2, sticky='w')
 
-        username_label = ttk.Label(credential_frame, text='Username: ')
+        username_label = Label(self.credential_frame_R, text='Username: ')
         username_label.grid(column=1, row=1, sticky=W)
-        self.username_entry = ttk.Entry(credential_frame)
+        self.username_entry = Entry(self.credential_frame_R)
         self.username_entry.grid(column=2, row=1, pady=3,sticky=E)
 
-        self.password_entry_1 = ttk.Entry(credential_frame, show="*")
+        self.password_entry_1 = Entry(self.credential_frame_R, show="*")
         self.password_entry_1.grid(column=2, row=2, pady=3,sticky=E)
 
-        password_label_1 = ttk.Label(credential_frame, text='Password:')
+        password_label_1 = Label(self.credential_frame_R, text='Password:')
         password_label_1.grid(column=1, row=2, sticky=W)
         
-        self.password_entry_2 = ttk.Entry(credential_frame, show="*")
+        self.password_entry_2 = Entry(self.credential_frame_R, show="*")
         self.password_entry_2.grid(column=2, row=3, pady=3,sticky=E)
 
-        password_label_2 = ttk.Label(credential_frame, text='Repeat password:')
+        password_label_2 = Label(self.credential_frame_R, text='Repeat password:')
         password_label_2.grid(column=1, row=3, sticky=W)    
 
-        submit_button = ttk.Button(credential_frame, text='Submit')
+        submit_button = Button(self.credential_frame_R, text='Submit')
         submit_button.grid(column=2,row=4, columnspan=2, sticky='e')
         submit_button.bind("<Button-1>",self.register_submit)
         submit_button.bind("<Return>",self.register_submit)
         self.tab_controller.hide(self.login)   # 
-
 
     def register_submit(self,event):
         'Gets the text from the username and password field on the login tab'
@@ -301,7 +348,7 @@ class Client(object):
 
         if username != '' and password_1 != '' and (password_1 == password_2):
             self.options['new']['USER'] = username
-            self.options['new']['PASSWORD'] = encrypt(password_1)
+            self.options['new']['PASSWORD'] = password_1
             if self.connect_remote_server(self.options['new']):             
                 self.contacts_tab()
                 #self.tab_controller.hide(self.login)
@@ -314,10 +361,15 @@ class Client(object):
                 notify.title('Failed Registration')
                 msg = Message(notify, text='Registration Failed')
                 msg.pack()
-                   
+        else:
+            alert_label = Label(self.credential_frame_R, text='Username missing or password mismatching', foreground='red')
+            alert_label.grid(columnspan=3)
+                
+                
 
     def gui_update(self):
-        'Method called every second to update the window'           
+        'Method called every second to update the window'        
+                
         try:            
             received_message = self.received_messages.get_nowait()
             user = received_message['USER']
@@ -337,6 +389,8 @@ class Client(object):
             pass
         'Schedule gui_update again in one second'
         self.window.after(1000, self.gui_update)
+
+    
 
 
     def connect_remote_server(self,data):
@@ -358,7 +412,6 @@ class Client(object):
             else:
                 #check this line if other things are broken
                 return False
-
 
     def local_server(self):
         'Initialise the instance with an IP address and port number'
@@ -390,6 +443,7 @@ class Client(object):
 
     def client_handler(self,connected_client, client_address):
         'Send and receive data from each client that connects'        
+
         size = 1024
         result = ''
         while True:
@@ -407,6 +461,8 @@ class Client(object):
             'Need to check who the message has to go to'
             'encode and send'
                 
+            
+
             result = json.dumps(result).encode('utf-8')                
             connected_client.send(result)
             
@@ -416,6 +472,7 @@ class Client(object):
         while True:
             if not self.received_messages.empty():
                 print(self.received_messages.get_nowait())
+        
 
 
     def send_message(self,message):
@@ -426,8 +483,10 @@ class Client(object):
     def main_window(self):
         'Create main chat window'
         self.root = Tk()
+        
+        
+      
         self.root.mainloop()
-
         
     def chat_window(self):
         'GUI window to be used for chatting'
@@ -448,11 +507,14 @@ class Client(object):
         self.window.bind("<Return>",self.mouse_enter)
         
         
+
     def update_window(self,user,message):
         'Add text to the display when enter or send is pressed'
         self.user_tabs_list[user].configure(state='normal')                
         self.user_tabs_list[user].insert(END,'{}: {}\n \n'.format(user,message))        
         self.user_tabs_list[user].configure(state='disabled')
+        
+        
         
 
     def get_text(self,user):
@@ -469,38 +531,28 @@ class Client(object):
             #Add message directly to the queue instead
             self.sent_messages.put_nowait(message)
         
+            
+        
 
     def mouse_enter(self,event):
         'Used by the send button to respond to mouse and enter key events'
         self.get_text()
 
 
-def create_db():
-    'Create database to be used by client'
-    con = sqlite3.connect('client.db')
-    cur = con.cursor()
-    cur.execute(""" CREATE TABLE contacts (username string primary key, date text)""")
-    con.commit()
-    con.close()  
     
-def delete_db():
-    'Delete client database'
-    con = sqlite3.connect('client.db')
-    cur = con.cursor()
-    cur.execute(""" DROP TABLE """)
-    con.commit()
-    con.close()    
-                
+        
+        
 
 def run():
         
     chat = Client()
     'Start mainloop'
-    chat.window.mainloop()   
-              
+    chat.master.mainloop()   
+    #chat.window.mainloop()   
+ 
+           
+                       
 
 if __name__ == "__main__":
-    #create_db()
     run()
-
     

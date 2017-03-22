@@ -137,17 +137,17 @@ class Chatserver(object):
     def new_user(self, received_dict):
         'Adds a user to the database'
         user = received_dict["USER"].lower()
-        print received_dict  #["USER"]
+        print received_dict  #["USER"]-----------------
         dt = str(datetime.datetime.now())        
         try: 
             con = sqlite3.connect('chatserver.db')
             cur = con.cursor()
-            print 'try insert'
+            print 'try insert'  #------------
             cur.execute("INSERT INTO users VALUES (?,?,?,?)",(received_dict['USER'].lower(),
                                                               received_dict['PASSWORD'],
                                                               received_dict['CONNECTION'],
                                                               dt))        
-            print 'inserted'
+            print 'inserted'  #-----------------
             con.commit()      
         except:
             return False
