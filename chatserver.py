@@ -123,15 +123,16 @@ class Chatserver(object):
         con = sqlite3.connect('chatserver.db')
         cur = con.cursor()
         try:
-            cur.execute("SELECT username, password, connection, date FROM users where username = ?",
+            cur.execute("SELECT username, connection, date FROM users where username = ?",
                         (received_dict['USER'].lower(),))
             for record in cur:
                 details['USER'] = record[0]
-                details['DATE'] = record[3]
+                details['DATE'] = record[2]
         except:
             return False
         con.close()
         return details
+
 
 
     def new_user(self, received_dict):

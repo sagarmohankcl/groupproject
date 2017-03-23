@@ -19,6 +19,7 @@ class Client(object):
     'Chat application Client'
     username = ''
     password =''
+    connection = ''
     l =[]    
     user_tabs_list = {}
     user_send_list = {}
@@ -27,7 +28,11 @@ class Client(object):
     received_messages = queue.Queue()     
     sent_messages = queue.Queue()
     name = ['mary','john','joe']
-    chat_button_user =''
+
+    open_chat_tabs = {}
+    #chat_button_user =''
+    contacts_dict = {} #{username:{'CONNECTION':connection,'TIME':time}} 
+
 
     options = {'login': {'OPTION':'LOGIN','USER':username,'PASSWORD':password},
                'query': {'OPTION': 'QUERY_USER','USER':username},
@@ -35,7 +40,7 @@ class Client(object):
                'new' : {'OPTION':'NEW_USER','USER': username,'PASSWORD': password},
                'search': {'OPTION': 'SEARCH_USER', 'USER':username}
                }
-
+    
 
     def __init__(self):
         'This method initialises the basic window'
@@ -149,9 +154,17 @@ class Client(object):
         'Add listbox to the frame'
         listbox_frame = Frame(self.contacts)
         listbox_frame.grid(column=0, row=1, padx=100, pady=10)
-        contacts_listbox = Treeview(listbox_frame)
-        contacts_listbox.grid(column=0,row=1, pady=4, ipadx=2, ipady=2, sticky='w')
-        
+
+        #contacts_listbox = Treeview(listbox_frame)
+        self.contacts_listbox = VerticalScrolledFrame(listbox_frame)
+        self.contacts_listbox.grid(column=0,row=1, pady=4, ipadx=2, ipady=2, sticky='w')
+
+        'Get previously added contacts and display'
+        self.get_contacts()
+        self.display_contacts()
+        #----------------------------------------------------------------------------------------------
+
+
         'Add Search'
         self.search_entry = Entry(listbox_frame)
         self.search_entry.grid(column=0, row=2, padx=1, pady=3,sticky='w')
@@ -159,6 +172,12 @@ class Client(object):
         search_button.grid(column=0,row=2, sticky='e')
         search_button.bind("<Button-1>",self.contacts_search)
         search_button.bind("<Return>",self.contacts_search)
+
+        'Label for communication about results'
+        self.search_message = StringVar()
+        self.search_label = Label(listbox_frame, textvariable=self.search_message, foreground='blue')
+        self.search_label.grid(columnspan=3)
+
 
         'Add Logout Button'
         logout_frame = Frame(self.contacts,width=180, height=180)
@@ -174,10 +193,10 @@ class Client(object):
     def contacts_search(self,event):
         'Gets the text from the search field onthe login tab'
         'Calls the connect_remote server method'
-        'Returns the result'
+        #'Returns the result'
         results ={}
         user = self.search_entry.get()
-        self.chat_button_user = user
+        #self.chat_button_user = user
         if user != '':
             self.options['search']['USER'] = user            
             results = (self.connect_remote_server(self.options['search']))
@@ -195,34 +214,97 @@ class Client(object):
                 #chat_button.bind("<Button-1>",self.chat_button_clicked)
                 #contacts_add = Button(login_frame, text='Add Contact',width=15)
                 #contacts_add.pack()
-                result = self.add_contact(results)
+                if self.add_contact(results):
+                    self.search_message.set('Contact added')
+                    'The user is added to the local dictionary'
+                    self.contacts_dict['USER'] = user
+                    'Display new contact'
+
+                #-----------------------    
                 
-                
-            else:                
-                'Pop up window to notify the user'
-                notify = Toplevel()
-                notify.title('Search User')
-                msg = Label(notify, text='User not found')
-                msg.pack()
+                else:                
+                #'Pop up window to notify the user'
+                #notify = Toplevel()
+                #notify.title('Search User')
+                #msg = Label(notify, text='User not found')
+                #msg.pack()
+                    self.search_message.set('Contact already added')
+            else:
+                self.search_message.set('User not existing')
+
             self.search_entry.delete(0,END)
 
-    def chat_button_clicked(self,event):
-        'Open a new chat tab'
-        self.chat_tab(self.chat_button_user)
-        
+
+    
     def add_contact(self, results):
-        'Add a new contact to local contact list'
+        'Add a new contact to local database'
         print "try insert"
         try: 
             con = sqlite3.connect('client.db')
             cur = con.cursor()  
             cur.execute("INSERT INTO contacts VALUES (?,?)", (results['USER'].lower(), results['DATE'].lower()))
             con.commit() 
-            print "inserted"     
+            print "inserted"
+
+            'Update the displayed contacts'
+            self.get_contacts()
+            self.display_contacts()     
         except:
+
             return False
         con.close()
         return True
+
+
+
+    def get_contacts(self):
+        'Get from the local db the list of the already added contacts'
+        try:
+            con = sqlite3.connect('client.db')
+            cur = con.cursor()  
+            cur.execute("SELECT username FROM contacts")
+            for record in cur:
+                self.contacts_dict[record[0]]= {}   #create empty instance for that contact 
+            print self.contacts_dict 
+        except:
+            'Message: impossible to connect to local database'#-------------------------------------------------------------
+            #return False
+        con.close()
+        #return True
+
+
+    def display_contacts(self):
+        'empty the display and fill it again'
+        for child in self.contacts_listbox.interior.winfo_children():
+            child.destroy()
+        print 'ciao' 
+        print self.contacts_dict.keys()
+        'Create one button for each contact'
+        for username in sorted(self.contacts_dict.keys()):
+            btn = Button(self.contacts_listbox.interior, width=20, #relief=FLAT, 
+                #bg="gray99", fg="purple3",font="Dosis",
+                text= username,
+                command=lambda name=username:self.chat_button_clicked(name))
+            #btn.bind("<Button-1>",self.chat_button_clicked)
+            #btn.bind("<Return>",self.chat_button_clicked)
+            btn.pack(padx=10, pady=5, side=TOP)
+        
+ 
+    def chat_button_clicked(self,name):
+        'Open a new chat tab if the contact is online'
+
+        
+        'try to connect:'
+        'if connection is possible, open chat tab'#---------------------------------------------------------
+        'else communicate user offline'
+
+        #self.chat_tab(self.chat_button_user)
+        self.open_chat_tabs[name] = name
+        self.chat_tab(name)
+        'set the focus on the new tab'#-----------------------------------------
+
+
+        
 
 
     def login_tab(self):
@@ -252,6 +334,7 @@ class Client(object):
         username_label = Label(self.credential_frame, text='Username: ')
         username_label.grid(column=1, row=1, sticky=W)
         self.username_entry = Entry(self.credential_frame)
+        self.username_entry.focus_set()
         self.username_entry.grid(column=2, row=1, pady=3,sticky=E)
 
         self.password_entry = Entry(self.credential_frame, show="*")
@@ -297,6 +380,7 @@ class Client(object):
             self.options['login']['PASSWORD'] = encrypt(password)
             if self.connect_remote_server(self.options['login']):             
                 self.contacts_tab()
+                self.display_contacts()#----------------------------------------------------
                 self.tab_controller.hide(self.login)                
             else:
                 #alert_label = ttk.Label(self.credential_frame, text='Username or password mismatching')
@@ -367,6 +451,7 @@ class Client(object):
             self.options['new']['PASSWORD'] = encrypt(password_1)
             if self.connect_remote_server(self.options['new']):             
                 self.contacts_tab()
+                self.display_contacts() #-------------------------------------------------
                 #self.tab_controller.hide(self.login)
                 self.register_w.destroy()                
             else:
@@ -555,6 +640,52 @@ class Client(object):
         self.get_text()
 
 
+
+#@author: http://stackoverflow.com/questions/31762698/dynamic-button-with-scrollbar-in-tkinter-python
+class VerticalScrolledFrame(Frame):
+    """A pure Tkinter scrollable frame that actually works!
+
+    * Use the 'interior' attribute to place widgets inside the scrollable frame
+    * Construct and pack/place/grid normally
+    * This frame only allows vertical scrolling
+    """
+    def __init__(self, parent, *args, **kw):
+        Frame.__init__(self, parent, *args, **kw) 
+
+        # create a canvas object and a vertical scrollbar for scrolling it
+        vscrollbar = Scrollbar(self, orient=VERTICAL)
+        vscrollbar.pack(fill=Y, side=RIGHT, expand=FALSE)
+        canvas = Canvas(self, bd=0, highlightthickness=0,
+                        yscrollcommand=vscrollbar.set)
+        canvas.pack(side=LEFT, fill=BOTH, expand=TRUE)
+        vscrollbar.config(command=canvas.yview)
+
+        # reset the view
+        canvas.xview_moveto(0)
+        canvas.yview_moveto(0)
+
+        # create a frame inside the canvas which will be scrolled with it
+        self.interior = interior = Frame(canvas)
+        interior_id = canvas.create_window(0, 0, window=interior,
+                                           anchor=NW)
+
+        # track changes to the canvas and frame width and sync them,
+        # also updating the scrollbar
+        def _configure_interior(event):
+            # update the scrollbars to match the size of the inner frame
+            size = (interior.winfo_reqwidth(), interior.winfo_reqheight())
+            canvas.config(scrollregion="0 0 %s %s" % size)
+            if interior.winfo_reqwidth() != canvas.winfo_width():
+                # update the canvas's width to fit the inner frame
+                canvas.config(width=interior.winfo_reqwidth())
+
+        interior.bind('<Configure>', _configure_interior)
+
+        def _configure_canvas(event):
+            if interior.winfo_reqwidth() != canvas.winfo_width():
+                # update the inner frame's width to fill the canvas
+                canvas.itemconfigure(interior_id, width=canvas.winfo_width())
+        canvas.bind('<Configure>', _configure_canvas)
 
 
 def create_db():
