@@ -1,0 +1,92 @@
+\documentclass[10pt,a4paper,oneside]{report}
+
+%\documentclass[10pt,a4paper,oneside]{book}
+%\setlength{\oddsidemargin}{15mm} %aggiungo spazio per la rilegatura
+%\setlength{\evensidemargin}{15mm}
+
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage{lscape}
+\usepackage[]{algorithm2e}
+\usepackage{makeidx}
+\usepackage{import}
+\usepackage{subfiles}
+\usepackage[usenames,dvipsnames,svgnames,table]{xcolor}
+\usepackage{usecases}
+\usepackage{nameref}
+\usepackage{textcomp}
+\usepackage[toc,page]{appendix}
+
+%\newcommand{\V}{\mathcal{V}}
+%\newcommand{\green}[1]{\textcolor{Green}{\textbf{#1}}}
+
+\author{Synomilia}
+
+
+\begin{document}\thispagestyle{empty}
+
+\begin{center}
+\large
+King's College London\\
+Department of Informatics\\[2cm]
+
+{\huge \bfseries Development of a chatting application}\\[2cm]
+
+\begin{center}
+	\Large Group Project Report \\%[1.5cm]%of \\[.2cm]
+	7CCSMGPR 
+\end{center}
+
+March 2017\\[2cm]
+
+\includegraphics[width=.4\linewidth]{chat-2-icon.png}\\[4cm]
+
+\begin{minipage}{.49\textwidth}
+	\begin{flushleft}
+		\textit{Group:}\\
+		\textbf{Synomilia}\\
+	\end{flushleft}
+\end{minipage}
+\begin{minipage}{.49\textwidth}
+	\begin{flushright}
+			\textit{Supervisors}\\ 
+			\textbf{Dr. Laurence Tratt}\\
+			\textbf{Dr. Elizabeth Black} 
+	\end{flushright}
+\end{minipage}
+
+\end{center}
+%\newpage
+%\thispagestyle{empty}\null\pagebreak
+%\frontmatter
+
+\begin{abstract}
+abstract tba
+\end{abstract}
+\tableofcontents
+
+% NOTE:
+% to execute just one section, run this file commenting all the others subfiles	
+
+%\subfile{acronyms.tex}
+\subfile{Introduction/introduction.tex}
+\subfile{Review/review.tex}
+\subfile{RandD/requir_design.tex}
+\subfile{Implementation/implementation.tex}
+\subfile{Teamwork/teamwork.tex}
+\subfile{Evaluation/evaluation.tex}
+\subfile{PeerAss/assessment.tex}
+
+
+%\begin{appendices}
+%\subfile{Appendix1.tex}
+%\end{appendices}
+
+%\subfile{Bibliography/biblio.tex}
+
+\end{document}
+
