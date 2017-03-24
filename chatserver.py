@@ -91,6 +91,10 @@ class Chatserver(object):
             result = self.login(received_dict)
         elif option == 'SEARCH_USER':
             result = self.search_user(received_dict)
+        elif option == 'ADD_USER':
+            result = self.add_user(received_dict)
+        elif option == 'GET_CONTACTS':
+            result = self.get_contacts(received_dict)
         else:
             return 'INVALID COMMAND'        
         return result
@@ -133,7 +137,43 @@ class Chatserver(object):
         con.close()
         return details
 
+    def add_user(self,received_dict):
+        'Add a contact to the contacts table in server db for a client'
+        username = received_dict['USER']
+        contact_name = received_dict['CONTACT']
+        try: 
+            con = sqlite3.connect('chatserver.db')
+            cur = con.cursor()
+            print 'try inserting contact'  #------------
+            cur.execute("INSERT INTO contacts VALUES (?,?)",(received_dict['USER'].lower(),
+                                                              received_dict['CONTACT'].lower()))        
+            print 'inserted contact'  #-----------------
+            con.commit()      
+        except:
+            return False
+        con.close()
+        return True
 
+    def get_contacts(self,received_dict):
+        'Return contact list to client from contacts table in db'
+        #username = received_dict['USER']
+        details = [] 
+        con = sqlite3.connect('chatserver.db')
+        cur = con.cursor()
+        try:
+            cur.execute("SELECT contact_name FROM contacts where username = ?",
+                        (received_dict['USER'].lower(),))
+            print "contacts"
+            print cur
+            for record in cur:
+                details.append(record[0])
+            #details = cur.fetchall()
+            print "details"
+            print details
+        except:
+            return False
+        con.close()
+        return details
 
     def new_user(self, received_dict):
         'Adds a user to the database'
@@ -190,6 +230,7 @@ def create_db():
     con = sqlite3.connect('chatserver.db')
     cur = con.cursor()
     cur.execute(""" CREATE TABLE users (username string primary key, password text, connection text, date text)""")
+    cur.execute("""CREATE TABLE contacts (username string, contact_name string, primary key (username, contact_name))""")
     con.commit()
     con.close()
         
@@ -209,6 +250,7 @@ def delete_db():
 if __name__ == "__main__":
     #port = eval(input('Enter port number to use: '))
     Chatserver('',5001).listen()
+    #create_db()
     #new_user('john','123','127.0.0.1:5098')
     #update_user('marc','128.0.0.1:8000')
     #print(Chatserver.query_user('marc'))  

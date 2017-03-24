@@ -38,7 +38,9 @@ class Client(object):
                'query': {'OPTION': 'QUERY_USER','USER':username},
                'update': {'OPTION': 'UPDATE_USER','USER':username},
                'new' : {'OPTION':'NEW_USER','USER': username,'PASSWORD': password},
-               'search': {'OPTION': 'SEARCH_USER', 'USER':username}
+               'search': {'OPTION': 'SEARCH_USER', 'USER':username},
+               'add' : {'OPTION': 'ADD_USER', 'USER':username, 'CONTACT': ''},
+               'get': {'OPTION': 'GET_CONTACTS', 'USER':username}
                }
     
 
@@ -77,21 +79,21 @@ class Client(object):
         #self.main_tab()
         #'Schedule gui_update to run on the main thread in one second'
         #self.window.after(1000, self.gui_update)'''
-        
+    '''    
     def main_tab(self):
         'This method contains the controls for the main tab'
-        '''self.tab_controller.add(self.main, text='Main')
+        self.tab_controller.add(self.main, text='Main')
         self.tab_controller.pack(expand=1, fill="both")
         self.main_frame = ttk.LabelFrame(self.main, text=' Synomilia ')
-        self.main_frame.grid(column=0, row=0, padx=8, pady=4)'''
+        self.main_frame.grid(column=0, row=0, padx=8, pady=4)
 
         self.main = ttk.Frame(self.tab_controller)
-        self.tab_controller.add(ttk.LabelFrame(width=500, height=550,text= ''),text= '')
+        self.tab_controller.add(ttk.LabelFrame(width=300, height=550,text= ''),text= '')
         self.tab_controller.pack(expand=1, fill="both")
         
         #conversation_frame = ttk.LabelFrame(self.main, text=' Conversation ')
         #conversation_frame.grid(column=0, row=0, padx=8, pady=4)
-
+    '''
 
         
     #def logout(self):
@@ -106,13 +108,13 @@ class Client(object):
         conversation_frame = LabelFrame(tab_name, text=' Conversation ')
         conversation_frame.grid(column=0, row=0, padx=8, pady=4)
         
-        display = Text(conversation_frame, bg="white", width=60, height=30, name='display')
+        display = Text(conversation_frame, bg="white", width=55, height=30, name='display') #witdh= number of characters that can be typed
         display.grid(column=0, row=1, sticky='W')
         self.user_tabs_list[name] = display
         
         'Box to type message'
-        submit_text = Entry(conversation_frame, width=60)
-        submit_text.grid(column=0, row=2, padx=3, pady=5, ipady=5,sticky=W)
+        submit_text = Entry(conversation_frame, width=35)
+        submit_text.grid(column=0, row=2, padx=10, pady=5, ipady=5,sticky=W)
         'Send Button'
         send = Button(conversation_frame, text="Send")
         send.grid(column=0, row=2, padx=10,ipady=4, sticky=E)
@@ -217,8 +219,11 @@ class Client(object):
                 if self.add_contact(results):
                     self.search_message.set('Contact added')
                     'The user is added to the local dictionary'
-                    self.contacts_dict['USER'] = user
+                    #self.contacts_dict['USER'] = user
                     'Display new contact'
+                    'Add new contact to contacts_dict'
+                    self.contacts_dict[results['USER']] = {}
+                    self.display_contacts()
 
                 #-----------------------    
                 
@@ -239,26 +244,14 @@ class Client(object):
     def add_contact(self, results):
         'Add a new contact to local database'
         print "try insert"
-        try: 
-            con = sqlite3.connect('client.db')
-            cur = con.cursor()  
-            cur.execute("INSERT INTO contacts VALUES (?,?)", (results['USER'].lower(), results['DATE'].lower()))
-            con.commit() 
-            print "inserted"
-
-            'Update the displayed contacts'
-            self.get_contacts()
-            self.display_contacts()     
-        except:
-
-            return False
-        con.close()
-        return True
-
+        self.options['add']['USER'] = self.username
+        self.options['add']['CONTACT'] = results['USER']
+        results = self.connect_remote_server(self.options['add'])
+        return results
 
 
     def get_contacts(self):
-        'Get from the local db the list of the already added contacts'
+        '''Get from the local db the list of the already added contacts'
         try:
             con = sqlite3.connect('client.db')
             cur = con.cursor()  
@@ -270,7 +263,16 @@ class Client(object):
             'Message: impossible to connect to local database'#-------------------------------------------------------------
             #return False
         con.close()
-        #return True
+        #return True'''
+
+        'Get contact list from the chatserver db'
+        self.options['get']['USER'] = self.username
+        results = self.connect_remote_server(self.options['get'])
+        print "results for get contacts"
+        print results
+        for each_contact in results:
+            self.contacts_dict[each_contact] = {}
+
 
 
     def display_contacts(self):
@@ -373,14 +375,14 @@ class Client(object):
         'Calls the connect_remote server method'
         'Hides the login tab'
         'Calls the Main tab'
-        username = self.username_entry.get()
-        password = self.password_entry.get()        
-        if username != '' and password != '':
-            self.options['login']['USER'] = username
-            self.options['login']['PASSWORD'] = encrypt(password)
+        self.username = self.username_entry.get()
+        self.password = self.password_entry.get()        
+        if self.username != '' and self.password != '':
+            self.options['login']['USER'] = self.username
+            self.options['login']['PASSWORD'] = encrypt(self.password)
             if self.connect_remote_server(self.options['login']):             
                 self.contacts_tab()
-                self.display_contacts()#----------------------------------------------------
+                #self.display_contacts()#----------------------------------------------------
                 self.tab_controller.hide(self.login)                
             else:
                 #alert_label = ttk.Label(self.credential_frame, text='Username or password mismatching')
@@ -442,13 +444,14 @@ class Client(object):
         'Close registration window'
         #'Hides the login tab'
         'Calls the Main tab'
-        username = self.username_entry.get()
+        self.username = self.username_entry.get()
         password_1 = self.password_entry_1.get() 
         password_2 = self.password_entry_2.get() 
 
-        if username != '' and password_1 != '' and (password_1 == password_2):
-            self.options['new']['USER'] = username
-            self.options['new']['PASSWORD'] = encrypt(password_1)
+        if self.username != '' and password_1 != '' and (password_1 == password_2):
+            self.password = password_1
+            self.options['new']['USER'] = self.username
+            self.options['new']['PASSWORD'] = encrypt(self.password)
             if self.connect_remote_server(self.options['new']):             
                 self.contacts_tab()
                 self.display_contacts() #-------------------------------------------------
@@ -588,7 +591,7 @@ class Client(object):
         
       
         self.root.mainloop()
-        
+    '''    
     def chat_window(self):
         'GUI window to be used for chatting'
         self.window = Toplevel()
@@ -606,7 +609,7 @@ class Client(object):
         self.send.bind("<Button-1>",self.mouse_enter)
         'Not sure why had to bind to root'
         self.window.bind("<Return>",self.mouse_enter)
-        
+    '''    
         
 
     def update_window(self,user,message):
