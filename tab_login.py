@@ -23,11 +23,15 @@ class Client(object):
     l =[]    
     user_tabs_list = {}
     user_send_list = {}
+    'used to store list of tabs?'
     list_of_tabs = {}
     tab_name_user = {}
+    'Use to store the mapping of users to socket connection'
+    user_connection = {}  #--\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
     received_messages = queue.Queue()     
     sent_messages = queue.Queue()
     name = ['mary','john','joe']
+    #chat_button_user =''  #---\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 
     open_chat_tabs = {}
     #chat_button_user =''
@@ -62,7 +66,6 @@ class Client(object):
         #   SHIFT+CTRL+TAB - previous tab
         #   ALT+K - select tab using mnemonic (K = underlined letter)
         self.tab_controller.enable_traversal()
-
         self.tab_controller.pack(fill=BOTH, expand=Y, padx=2, pady=3)  # add margin
 
         #--- create description tab
@@ -72,13 +75,13 @@ class Client(object):
         #self.sent_messages = queue.Queue()
         #self.window = Tk()
         #self.window.title("Synomilia Chat")
-        #thread.start_new_thread(self.local_server,())
+        thread.start_new_thread(self.local_server,())
         #self.tab_controller = ttk.Notebook(self.window)#,width=500, height=550)
         
         #self.login_tab()
         #self.main_tab()
-        #'Schedule gui_update to run on the main thread in one second'
-        #self.window.after(1000, self.gui_update)'''
+        'Schedule gui_update to run on the main thread in one second'
+        self.demoPanel.after(1000, self.gui_update)
     '''    
     def main_tab(self):
         'This method contains the controls for the main tab'
@@ -111,15 +114,21 @@ class Client(object):
         display = Text(conversation_frame, bg="white", width=55, height=30, name='display') #witdh= number of characters that can be typed
         display.grid(column=0, row=1, sticky='W')
         self.user_tabs_list[name] = display
-        
+
+        'set focus'#---------------------------------------------------------
+        self.user_tabs_list[name].focus_set()
+
         'Box to type message'
         submit_text = Entry(conversation_frame, width=35)
         submit_text.grid(column=0, row=2, padx=10, pady=5, ipady=5,sticky=W)
+        submit_text.focus_set()
         'Send Button'
         send = Button(conversation_frame, text="Send")
         send.grid(column=0, row=2, padx=10,ipady=4, sticky=E)
         #check here - take out
-        self.user_send_list[name] = submit_text
+        self.user_send_list[name] = submit_text #-----------------------------------
+        print 'chat tab: user_send_list' #--------------------------------
+        print self.user_send_list[name] #-------------------------------
         send.bind("<Button-1>",self.chat_send_button)
         send.bind("<Return>",self.chat_send_button)
         
@@ -127,11 +136,64 @@ class Client(object):
     def chat_send_button(self,event):
         'Gets the tab id, the calls the get_text method to update window'
         tab = self.tab_controller.select()
-                
-        for key in self.tab_name_user.keys():           
-            if str(tab) ==  str(key):
-                user = (self.tab_name_user.get(key))  
+        print 'tab'
+        print str(tab)        
+        for key in self.tab_name_user.keys():
+            print 'key'
+            print str(key)           
+            if str(tab) == str(key): #----------------
+                user = (self.tab_name_user.get(key))
+                print 'user'
+                print user
+            else: #------------------------------------
+                print 'bohhhhhhhhhhhhhhh' #----------------------
         self.get_text(user)
+
+
+    def chat_connection(self,name):
+        'Check if user is in the user_connection list'
+        'If not it means that the conversation was initiated from the contact list'
+        'initiate a connection to the user by add them to the list'
+        'calling connect_remote_server method'
+        'Check if a connection for the user exists'
+        ###### turn this into a function that the contacts message button calls
+        ####then call the chat tab from this function
+        
+        if name not in self.user_connection.keys():            
+            
+            'Query the user to get connection details'
+            self.options['query']['USER'] = name
+            results = (self.connect_remote_server(self.options['query']))            
+            if results['CONNECTION'] != '':
+                host,port = results['CONNECTION'].split(':')
+                'Connect to the remote client and get the socket information'
+                'Store name and socket details in global list'
+                connected_client = self.connector(host,port)
+                self.user_connection[name] = connected_client
+                print('tuesday')
+                
+            else:
+                print('User is not online')
+                ####Put a pop up window here
+                #update client sock list after connect
+
+    def connector(self, host,port):
+        'Method to initiate TCP connection to client'
+        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        msg = '{} started a chat...'.format(self.username)
+        data = {'USER': 'marc','MSG':msg}        
+        data = json.dumps(data).encode('utf-8')
+        
+        'Start the connection and send initial message'
+        sock.connect((host, port))
+        sock.send(data)
+        'Start thread to receive messages'
+        'Can take out host but need to modify the method below'
+        thread.start_new_thread(client_handler,(sock, host))
+        return sock
+
+
+
 
 
     def contacts_tab(self):
@@ -268,8 +330,8 @@ class Client(object):
         'Get contact list from the chatserver db'
         self.options['get']['USER'] = self.username
         results = self.connect_remote_server(self.options['get'])
-        print "results for get contacts"
-        print results
+        #print "results for get contacts"
+        #print results
         for each_contact in results:
             self.contacts_dict[each_contact] = {}
 
@@ -279,8 +341,8 @@ class Client(object):
         'empty the display and fill it again'
         for child in self.contacts_listbox.interior.winfo_children():
             child.destroy()
-        print 'ciao' 
-        print self.contacts_dict.keys()
+        #print 'ciao' 
+        #print self.contacts_dict.keys()
         'Create one button for each contact'
         for username in sorted(self.contacts_dict.keys()):
             btn = Button(self.contacts_listbox.interior, width=20, #relief=FLAT, 
@@ -292,10 +354,9 @@ class Client(object):
             btn.pack(padx=10, pady=5, side=TOP)
         
  
-    def chat_button_clicked(self,name):
+    def chat_button_clicked(self,name):  # TO MERGE WITH CHAT_CONNECTION()
         'Open a new chat tab if the contact is online'
 
-        
         'try to connect:'
         'if connection is possible, open chat tab'#---------------------------------------------------------
         'else communicate user offline'
@@ -304,7 +365,10 @@ class Client(object):
         self.open_chat_tabs[name] = name
         self.chat_tab(name)
         'set the focus on the new tab'#-----------------------------------------
-
+        print 'open_chat_tabs + keys + name'
+        print self.open_chat_tabs
+        print self.open_chat_tabs.keys()
+        print name
 
         
 
@@ -472,27 +536,54 @@ class Client(object):
                 
 
     def gui_update(self):
-        'Method called every second to update the window'        
-                
+        'Method called every second to update the window'
+        #Might need to split the two trys in two methods'
+        
+        'Check the received_messages queue'        
         try:            
             received_message = self.received_messages.get_nowait()
             user = received_message['USER']
-            msg = received_message['MSG']
+            msg = received_message['MSG']            
+            print 'user'
+            print user
+            print 'in try - gui_update'
 
             'Check if tab exists for user or not'
-            'Create new tab or update existing tab'  
-            if user not in self.list_of_tabs.keys():                    
+            'Create new tab or update existing tab'
+            self.user_tabs_list
+            if user not in self.user_tabs_list.keys():                    
                 self.chat_tab(user)
+                print user
+                print msg
                 self.update_window(user,msg)
-                print(self.list_of_tabs)
+                print self.user_tabs_list
+                print 'empty?'
             else:
                 self.update_window(user,msg)
         except: #QueueEmpty: Need to find the exception to catch it here
             'Its ok if theres no data in the queue'
             'Will check again later'
             pass
-        'Schedule gui_update again in one second'
-        self.window.after(1000, self.gui_update)
+        try:            
+            sent_message = self.sent_messages.get_nowait()
+            
+            #call the send method now? or put this in the send method
+            'Check to see if the user is in the user_connection list'            
+            for key in self.user_connection.keys():           
+                if sent_message['USER'] ==  str(key):
+                    'Get the connection string'
+                    print sent_message
+                    connected_client = self.user_connection.get(key)                                
+                    print connected_client                    
+                    'encode the message as json and send'
+                    self.send_message(sent_message, connected_client)                                                  
+        except:
+            'Its ok if theres no data in the queue'
+            'Will check again later'
+            pass
+        
+        'Schedule gui_update again in one second'        
+        self.demoPanel.after(1000, self.gui_update)
 
     
 
@@ -517,6 +608,59 @@ class Client(object):
                 #check this line if other things are broken
                 return False
 
+
+    #Use inheritance from the method above
+    def connect_remote_client(self, host, port):
+        'Method to connect to other clients'
+        #data ={'USER': self.username, 'MSG':'Started a chat...'}
+                     
+        #with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s: 
+        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)    
+        print s
+        data = json.dumps(data).encode('utf-8')        
+        s.connect((host, port))            
+        #thread.start_new_thread(self.remote_client_send,(s))
+        #thread.start_new_thread(self.remote_client_recv,(s))
+
+        """while True:
+            data = s.recv(1024)            
+            if data:
+                data = json.loads(data.decode('utf-8'))
+                return data
+            else:
+                #check this line if other things are broken
+                return False"""
+
+
+    def remote_client_send(self,sock):
+        'Method to send data to the connected client'
+        data ={'USER': self.username, 'MSG':'Started a chat...'}
+        sock.send(data)
+        print 'remote client recv thread started'
+        while True:
+            try:            
+                sent_message = self.sent_messages.get_nowait()
+                sent_message = json.dumps(sent_message).encode('utf-8')         
+                sock.send(sent_message)
+            except:
+                pass
+            
+
+    def remote_client_recv(self,connected_client):
+        'Method to receive data from connected client'
+        size = 1024
+        print 'remote client recv thread started'
+        while True:
+            received_data = connected_client.recv(size)
+            if received_data:
+                received_data = json.loads(received_data.decode('utf-8'))
+                user = received_data['USER']
+                self.user_connection[user] = connected_client
+                self.received_messages.put_nowait(received_data)
+
+
+
+
     def local_server(self):
         'Initialise the instance with an IP address and port number'
         self.host = '127.0.0.1'#host
@@ -527,10 +671,10 @@ class Client(object):
     
         'Listens for connections from clients and spawns a new thread'
         try:
-            print('Server listening on {}:{}'.format(self.host,self.port))
+            print 'Server listening on {}:{}'.format(self.host,self.port)
             self.sock.listen(10)
         except:
-            print('Server not listening')
+            print 'Server not listening'
             #Need to put a break here
             
         while True:
@@ -538,11 +682,11 @@ class Client(object):
             #Need to log the IP address of the client (connection) at this stage
             #create a method to do it
             'Connection Times out after 60 secs'
-            connected_client.settimeout(120)   
+            #connected_client.settimeout(120)   
             'Call thread with the client_handler method'
             thread.start_new_thread(self.client_handler,(connected_client, client_address))
-            print('{}'.format(client_address))
-            print('{}'.format(connected_client))
+            print '{}'.format(client_address)
+            print '{}'.format(connected_client)
 
 
     def client_handler(self,connected_client, client_address):
@@ -550,25 +694,36 @@ class Client(object):
 
         size = 1024
         result = ''
+        #ip,host = client_address        
+        
         while True:
             received_data = connected_client.recv(size)
-            received_data = json.loads(received_data.decode('utf-8'))            
-            ip,host = client_address            
-            if received_data:                
-                self.received_messages.put_nowait(received_data)
-                print(received_data)
-                print(self.received_messages)
-                l= received_data
-            'if not self.sent_messages.empty():'
-            'when the connection is accepted do a list of IPs, then check'
-            'then check that list when sending'
-            'Need to check who the message has to go to'
-            'encode and send'
-                
-            
+            if not received_data:
+                break
+            received_data = json.loads(received_data.decode('utf-8'))
+            user = received_data['USER']
+            self.user_connection[user] = connected_client
+            self.received_messages.put_nowait(received_data)
+            print 'Client Handler thread started...'
+        connected_client.close()
 
-            result = json.dumps(result).encode('utf-8')                
-            connected_client.send(result)
+    def client_handler2(self,connected_client, client_address):
+        'Method to send data to the connected client'
+        sent_message ={'USER': self.username, 'MSG':'Started a chat...'}
+        sent_message = json.dumps(sent_message).encode('utf-8')
+        size = 1024
+        result = ''
+        ip,host = client_address   
+        connected_client.send(sent_message)
+        print 'Client Handler 2 thread started...'
+        while True:
+            try:            
+                sent_message = self.sent_messages.get_nowait()
+                sent_message = json.dumps(sent_message).encode('utf-8')         
+                connected_client.send(sent_message)                
+            except:
+                pass
+
             
             
     def receive(self):
@@ -579,11 +734,18 @@ class Client(object):
         
 
 
-    def send_message(self,message):
-        'Method to send data to the sent_messages queue'
-        self.sent_messages.put_nowait(message)
+    def send_message(self,sent_message, connected_client):
+        'Method to send data to the connected clients'
+        'First encode as json and then send'
+        result= json.dumps(sent_message).encode('utf-8')        
+        try:            
+            #####Something here?
+            connected_client.sendall(result)
+            print 'wednesday'
+        except:
+            print 'unable to send the message: '.format(message)
         
-    
+    '''
     def main_window(self):
         'Create main chat window'
         self.root = Tk()
@@ -591,7 +753,7 @@ class Client(object):
         
       
         self.root.mainloop()
-    '''    
+        
     def chat_window(self):
         'GUI window to be used for chatting'
         self.window = Toplevel()
@@ -614,6 +776,10 @@ class Client(object):
 
     def update_window(self,user,message):
         'Add text to the display when enter or send is pressed'
+        print 'inside update_window'
+        print self.user_tabs_list.keys()
+        print user
+
         self.user_tabs_list[user].configure(state='normal')                
         self.user_tabs_list[user].insert(END,'{}: {}\n \n'.format(user,message))        
         self.user_tabs_list[user].configure(state='disabled')
@@ -627,13 +793,14 @@ class Client(object):
         sent_data = {}
         if self.user_send_list[user].get() != '':
             message = self.user_send_list[user].get()
-            self.update_window(self.username,message)
+            self.update_window(user,message)
+            #self.update_window(self.username,message)
             self.user_send_list[user].delete(0,END)
             sent_data['USER']= user
             sent_data['MSG'] = message
-            #self.send_message(sent_data)
-            #Add message directly to the queue instead
-            self.sent_messages.put_nowait(message)
+            
+            'Add message to the outgoing queue'
+            self.sent_messages.put_nowait(sent_data)
         
             
         
