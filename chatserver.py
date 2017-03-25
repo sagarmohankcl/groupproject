@@ -19,10 +19,11 @@ import sqlite3
 import datetime
 
 
+#------------------------------------------------------------------------------
+#   Multithreaded TCP server to allow clients to connect to chat to each other
+#------------------------------------------------------------------------------
 
 class Chatserver(object):
-    'Multithreaded TCP server to allow clients to connect to chat to each other'
-
     def __init__(self, host, port):
         'Initialise the instance with an IP address and port number'
         self.host = host
@@ -31,16 +32,17 @@ class Chatserver(object):
         self.sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         self.sock.bind((self.host, self.port))  #Bind the socket (sock) to the host and port
 
+#------------------------------------------------------------------------------
+#   Listens for connections from clients and spawns a new thread
+#------------------------------------------------------------------------------
 
     def listen(self):
-        'Listens for connections from clients and spawns a new thread'
         try:
             print('Server listening on {}:{}'.format(self.host,self.port))
             self.sock.listen(10)
         except:
             print('Server not listening')
             #Need to put a break here
-            
         while True:
             connected_client, client_address = self.sock.accept()
             #Need to log the IP address of the client (connection) at this stage
@@ -52,9 +54,11 @@ class Chatserver(object):
             print('{}'.format(client_address))
             print('{}'.format(connected_client))
 
+#------------------------------------------------------------------------------
+#   Handles the client connection depending on the client request
+#------------------------------------------------------------------------------
 
-    def client_handler(self, connected_client, client_address):
-        'Handles the client connection depending on the client request'        
+    def client_handler(self, connected_client, client_address):       
         size = 1024
         details = {}
         while True:
@@ -77,18 +81,19 @@ class Chatserver(object):
                 connected_client.close()
                 return False
 
+#------------------------------------------------------------------------------
+#   Check which option the connected client wants
+#------------------------------------------------------------------------------
 
-    def check_options(self,option,received_dict):
-        'Check which option the connected client wants'       
-        
+    def check_options(self, option, received_dict):      
         if option == 'NEW_USER':            
             result = self.new_user(received_dict)
+        elif option == 'LOGIN':
+            result = self.login(received_dict)
         elif option == 'QUERY_USER':            
             result = self.query_user(received_dict)            
         elif option == 'UPDATE_USER':
             result = self.update_user(received_dict)
-        elif option == 'LOGIN':
-            result = self.login(received_dict)
         elif option == 'SEARCH_USER':
             result = self.search_user(received_dict)
         elif option == 'ADD_USER':
@@ -99,84 +104,12 @@ class Chatserver(object):
             return 'INVALID COMMAND'        
         return result
 
-
-    def query_user(self,received_dict):
-        'Search for a user to the database'
-        details = {'USER':'','PASSWORD':'','CONNECTION':'','DATE':''}        
-        
-        con = sqlite3.connect('chatserver.db')
-        cur = con.cursor()
-        try:
-            cur.execute("SELECT username, password, connection, date FROM users where username = ?",
-                        (received_dict['USER'].lower(),))
-            for record in cur:
-                details['USER'] = record[0]
-                details['PASSWORD'] = record[1]
-                details['CONNECTION'] = record[2]
-                details['DATE'] = record[3]
-        except:
-            return False 
-    
-        con.close()        
-        return details
-
-
-    def search_user(self, received_dict):
-        'Search for a user in the database and return result to the client'
-        details = {'USER':'','DATE':''} 
-        con = sqlite3.connect('chatserver.db')
-        cur = con.cursor()
-        try:
-            cur.execute("SELECT username, connection, date FROM users where username = ?",
-                        (received_dict['USER'].lower(),))
-            for record in cur:
-                details['USER'] = record[0]
-                details['DATE'] = record[2]
-        except:
-            return False
-        con.close()
-        return details
-
-    def add_user(self,received_dict):
-        'Add a contact to the contacts table in server db for a client'
-        username = received_dict['USER']
-        contact_name = received_dict['CONTACT']
-        try: 
-            con = sqlite3.connect('chatserver.db')
-            cur = con.cursor()
-            print 'try inserting contact'  #------------
-            cur.execute("INSERT INTO contacts VALUES (?,?)",(received_dict['USER'].lower(),
-                                                              received_dict['CONTACT'].lower()))        
-            print 'inserted contact'  #-----------------
-            con.commit()      
-        except:
-            return False
-        con.close()
-        return True
-
-    def get_contacts(self,received_dict):
-        'Return contact list to client from contacts table in db'
-        #username = received_dict['USER']
-        details = [] 
-        con = sqlite3.connect('chatserver.db')
-        cur = con.cursor()
-        try:
-            cur.execute("SELECT contact_name FROM contacts where username = ?",
-                        (received_dict['USER'].lower(),))
-            print "contacts"
-            print cur
-            for record in cur:
-                details.append(record[0])
-            #details = cur.fetchall()
-            print "details"
-            print details
-        except:
-            return False
-        con.close()
-        return details
+#------------------------------------------------------------------------------
+#   Adds a user to the database
+#------------------------------------------------------------------------------
 
     def new_user(self, received_dict):
-        'Adds a user to the database'
+        
         user = received_dict["USER"].lower()
         print received_dict  #["USER"]-----------------
         dt = str(datetime.datetime.now())        
@@ -195,9 +128,47 @@ class Chatserver(object):
         con.close()
         return True
 
-    def update_user(self,received_dict):
-        'Updates the timestamp for the record'        
+#------------------------------------------------------------------------------
+#   Logs in users
+#------------------------------------------------------------------------------
+
+    def login(self, received_dict):
+        user = self.query_user(received_dict)
+        print user  #---------------
+        if user['PASSWORD'] == received_dict['PASSWORD']: 
+            print 'logged in' #---------------------        
+            return self.update_user(received_dict)              
+        else:
+            return False
+ 
+#------------------------------------------------------------------------------
+#   Search for a user to the database
+#------------------------------------------------------------------------------       
+
+    def query_user(self, received_dict):
+        details = {'USER':'','PASSWORD':'','CONNECTION':'','DATE':''}        
+        
+        con = sqlite3.connect('chatserver.db')
+        cur = con.cursor()
+        try:
+            cur.execute("SELECT username, password, connection, date FROM users where username = ?",
+                        (received_dict['USER'].lower(),))
+            for record in cur:
+                details['USER'] = record[0]
+                details['PASSWORD'] = record[1]
+                details['CONNECTION'] = record[2]
+                details['DATE'] = record[3]
+        except:
+            return False 
     
+        con.close()        
+        return details
+
+#------------------------------------------------------------------------------
+#   Updates the timestamp for the record 
+#------------------------------------------------------------------------------       
+
+    def update_user(self, received_dict):
         con = sqlite3.connect('chatserver.db')
         cur = con.cursor()
         dt = str(datetime.datetime.now())
@@ -213,30 +184,82 @@ class Chatserver(object):
         con.close()
         return True
 
-    def login(self,received_dict):
-        'Logs in users'
-        user = self.query_user(received_dict)
-        print user  #---------------
-        if user['PASSWORD'] == received_dict['PASSWORD']: 
-            print 'logged in' #---------------------        
-            return self.update_user(received_dict)              
-        else:
+
+#------------------------------------------------------------------------------
+#    Search for a user in the database and return result to the client
+#------------------------------------------------------------------------------  
+
+    def search_user(self, received_dict):
+
+        details = {'USER':'','DATE':''} 
+        con = sqlite3.connect('chatserver.db')
+        cur = con.cursor()
+        try:
+            cur.execute("SELECT username, connection, date FROM users where username = ?",
+                        (received_dict['USER'].lower(),))
+            for record in cur:
+                details['USER'] = record[0]
+                details['DATE'] = record[2]
+        except:
             return False
-        
+        con.close()
+        return details
+
+#------------------------------------------------------------------------------
+#    Add a contact to the contacts table in server db for a client
+#------------------------------------------------------------------------------  
+
+    def add_user(self, received_dict):
+        username = received_dict['USER']
+        contact_name = received_dict['CONTACT']
+        try: 
+            con = sqlite3.connect('chatserver.db')
+            cur = con.cursor()
+            print 'try inserting contact'  #------------
+            cur.execute("INSERT INTO contacts VALUES (?,?)",(received_dict['USER'].lower(),
+                                                              received_dict['CONTACT'].lower()))        
+            print 'inserted contact'  #-----------------
+            con.commit()      
+        except:
+            return False
+        con.close()
+        return True
+
+#------------------------------------------------------------------------------
+#    Return contact list to client from contacts table in db
+#------------------------------------------------------------------------------  
+
+    def get_contacts(self, received_dict):
+        details = [] 
+        con = sqlite3.connect('chatserver.db')
+        cur = con.cursor()
+        try:
+            cur.execute("SELECT contact_name FROM contacts where username = ?",
+                        (received_dict['USER'].lower(),))
+            for record in cur:
+                details.append(record[0])
+        except:
+            return False
+        con.close()
+        return details
+ 
+#------------------------------------------------------------------------------
+#    Create database to be used by server
+#------------------------------------------------------------------------------  
 
 def create_db():
-    'Create database to be used by server'
-
     con = sqlite3.connect('chatserver.db')
     cur = con.cursor()
     cur.execute(""" CREATE TABLE users (username string primary key, password text, connection text, date text)""")
     cur.execute("""CREATE TABLE contacts (username string, contact_name string, primary key (username, contact_name))""")
     con.commit()
     con.close()
-        
+
+#------------------------------------------------------------------------------
+#    Deletes database'
+#------------------------------------------------------------------------------          
             
 def delete_db():
-    'Deletes database'
     con = sqlite3.connect('chatserver.db')
     cur = con.cursor()
     cur.execute(""" DROP TABLE """)
