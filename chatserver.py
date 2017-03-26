@@ -4,33 +4,44 @@ Date:  2017-02-08
 Description:
 A multithreaded server class that listens for connections from on clients on the
 Port specified and spawns a new connection to handle the client connection.
-
 Consists of:
 - Chatserver class
 - Constructor Method. To initialise the Chatserver object with a host IP and port
 - listen method. To listen for connections from clients
 - Client_handler method. To 
-
 '''
-
 import socket
 import threading
+import thread
+import json
+import sqlite3
+import datetime
+
+
+#------------------------------------------------------------------------------
+#   Multithreaded TCP server to allow clients to connect to chat to each other
+#------------------------------------------------------------------------------
 
 class Chatserver(object):
-    'Multithreaded TCP server to allow clients to connect to chat to each other'
-
     def __init__(self, host, port):
         'Initialise the instance with an IP address and port number'
         self.host = host
         self.port = port        
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)   #Create TCP socket
+        self.sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         self.sock.bind((self.host, self.port))  #Bind the socket (sock) to the host and port
 
+#------------------------------------------------------------------------------
+#   Listens for connections from clients and spawns a new thread
+#------------------------------------------------------------------------------
 
     def listen(self):
-        'Listens for connections from clients and spawns a new thread'
-        print('Server listening on {}:{}'.format(self.host,self.port))
-        self.sock.listen(10)    
+        try:
+            print('Server listening on {}:{}'.format(self.host,self.port))
+            self.sock.listen(10)
+        except:
+            print('Server not listening')
+            #Need to put a break here
         while True:
             connected_client, client_address = self.sock.accept()
             #Need to log the IP address of the client (connection) at this stage
@@ -38,29 +49,234 @@ class Chatserver(object):
             'Connection Times out after 60 secs'
             connected_client.settimeout(60)   
             'Call thread with the client_handler method'
-            threading.Thread(target = self.client_handler, args = (connected_client, client_address)).start()
+            thread.start_new_thread(self.client_handler,(connected_client, client_address))
+            print('{}'.format(client_address))
+            print('{}'.format(connected_client))
 
+#------------------------------------------------------------------------------
+#   Handles the client connection depending on the client request
+#------------------------------------------------------------------------------
 
-    def client_handler(self, connected_client, client_address):
-        'Handles the client connection depending on the client request'
-        'For now the method echos the client data back to them, for testing purposes'
+    def client_handler(self, connected_client, client_address):       
         size = 1024
+        details = {}
         while True:
-            try:
+            try:                
                 received_data = connected_client.recv(size)
-                if received_data:
-                    'Send back what the client sent'
-                    sent_data = received_data
-                    connected_client.send(sent_data)
-                    'This is for testing, TAKEOUT!'
-                    print(sent_data)
+                received_dict = json.loads(received_data.decode('utf-8'))                
+                ip,host = client_address
+                
+                if received_dict:
+                    received_dict['CONNECTION'] = '{}:{}'.format(ip,host)
+                    #print(received_dict)
+                    result = self.check_options(received_dict['OPTION'], received_dict)       
+                                        
                 else:
                     raise error('No one to send data to :(')
+
+                result = json.dumps(result).encode('utf-8')                
+                connected_client.send(result)                
             except:
                 connected_client.close()
                 return False
 
+#------------------------------------------------------------------------------
+#   Check which option the connected client wants
+#------------------------------------------------------------------------------
+
+    def check_options(self, option, received_dict):      
+        if option == 'NEW_USER':            
+            result = self.new_user(received_dict)
+        elif option == 'LOGIN':
+            result = self.login(received_dict)
+        elif option == 'QUERY_USER':            
+            result = self.query_user(received_dict)            
+        elif option == 'UPDATE_USER':
+            result = self.update_user(received_dict)
+        elif option == 'SEARCH_USER':
+            result = self.search_user(received_dict)
+        elif option == 'ADD_USER':
+            result = self.add_user(received_dict)
+        elif option == 'GET_CONTACTS':
+            result = self.get_contacts(received_dict)
+        else:
+            return 'INVALID COMMAND'        
+        return result
+
+#------------------------------------------------------------------------------
+#   Adds a user to the database
+#------------------------------------------------------------------------------
+
+    def new_user(self, received_dict):
+        
+        user = received_dict["USER"].lower()
+        print received_dict  #["USER"]-----------------
+        dt = str(datetime.datetime.now())        
+        try: 
+            con = sqlite3.connect('chatserver.db')
+            cur = con.cursor()
+            print 'try insert'  #------------
+            cur.execute("INSERT INTO users VALUES (?,?,?,?)",(received_dict['USER'].lower(),
+                                                              received_dict['PASSWORD'],
+                                                              received_dict['CONNECTION'],
+                                                              dt))        
+            print 'inserted'  #-----------------
+            con.commit()      
+        except:
+            return False
+        con.close()
+        return True
+
+#------------------------------------------------------------------------------
+#   Logs in users
+#------------------------------------------------------------------------------
+
+    def login(self, received_dict):
+        user = self.query_user(received_dict)
+        print user  #---------------
+        if user['PASSWORD'] == received_dict['PASSWORD']: 
+            print 'logged in' #---------------------        
+            return self.update_user(received_dict)              
+        else:
+            return False
+ 
+#------------------------------------------------------------------------------
+#   Search for a user to the database
+#------------------------------------------------------------------------------       
+
+    def query_user(self, received_dict):
+        details = {'USER':'','PASSWORD':'','CONNECTION':'','DATE':''}        
+        
+        con = sqlite3.connect('chatserver.db')
+        cur = con.cursor()
+        try:
+            cur.execute("SELECT username, password, connection, date FROM users where username = ?",
+                        (received_dict['USER'].lower(),))
+            for record in cur:
+                details['USER'] = record[0]
+                details['PASSWORD'] = record[1]
+                details['CONNECTION'] = record[2]
+                details['DATE'] = record[3]
+        except:
+            return False 
+    
+        con.close()        
+        return details
+
+#------------------------------------------------------------------------------
+#   Updates the timestamp for the record 
+#------------------------------------------------------------------------------       
+
+    def update_user(self, received_dict):
+        con = sqlite3.connect('chatserver.db')
+        cur = con.cursor()
+        dt = str(datetime.datetime.now())
+        try:
+        
+            cur.execute("Update users set date = ?, connection = ? where username = ?",
+                        (dt,
+                         received_dict['CONNECTION'],
+                         received_dict['USER'].lower()))
+            con.commit()
+        except:
+            return False
+        con.close()
+        return True
+
+
+#------------------------------------------------------------------------------
+#    Search for a user in the database and return result to the client
+#------------------------------------------------------------------------------  
+
+    def search_user(self, received_dict):
+
+        details = {'USER':'','DATE':''} 
+        con = sqlite3.connect('chatserver.db')
+        cur = con.cursor()
+        try:
+            cur.execute("SELECT username, connection, date FROM users where username = ?",
+                        (received_dict['USER'].lower(),))
+            for record in cur:
+                details['USER'] = record[0]
+                details['DATE'] = record[2]
+        except:
+            return False
+        con.close()
+        return details
+
+#------------------------------------------------------------------------------
+#    Add a contact to the contacts table in server db for a client
+#------------------------------------------------------------------------------  
+
+    def add_user(self, received_dict):
+        username = received_dict['USER']
+        contact_name = received_dict['CONTACT']
+        try: 
+            con = sqlite3.connect('chatserver.db')
+            cur = con.cursor()
+            print 'try inserting contact'  #------------
+            cur.execute("INSERT INTO contacts VALUES (?,?)",(received_dict['USER'].lower(),
+                                                              received_dict['CONTACT'].lower()))        
+            print 'inserted contact'  #-----------------
+            con.commit()      
+        except:
+            return False
+        con.close()
+        return True
+
+#------------------------------------------------------------------------------
+#    Return contact list to client from contacts table in db
+#------------------------------------------------------------------------------  
+
+    def get_contacts(self, received_dict):
+        details = [] 
+        con = sqlite3.connect('chatserver.db')
+        cur = con.cursor()
+        try:
+            cur.execute("SELECT contact_name FROM contacts where username = ?",
+                        (received_dict['USER'].lower(),))
+            for record in cur:
+                details.append(record[0])
+        except:
+            return False
+        con.close()
+        return details
+ 
+#------------------------------------------------------------------------------
+#    Create database to be used by server
+#------------------------------------------------------------------------------  
+
+def create_db():
+    con = sqlite3.connect('chatserver.db')
+    cur = con.cursor()
+    cur.execute(""" CREATE TABLE users (username string primary key, password text, connection text, date text)""")
+    cur.execute("""CREATE TABLE contacts (username string, contact_name string, primary key (username, contact_name))""")
+    con.commit()
+    con.close()
+
+#------------------------------------------------------------------------------
+#    Deletes database'
+#------------------------------------------------------------------------------          
+            
+def delete_db():
+    con = sqlite3.connect('chatserver.db')
+    cur = con.cursor()
+    cur.execute(""" DROP TABLE """)
+    con.commit()
+    con.close()
+
+    
+
+    
 
 if __name__ == "__main__":
-    port = eval(input('Enter port number to use: '))
-    Chatserver('',port).listen()
+    #port = eval(input('Enter port number to use: '))
+    Chatserver('',5001).listen()
+    #create_db()
+    #new_user('john','123','127.0.0.1:5098')
+    #update_user('marc','128.0.0.1:8000')
+    #print(Chatserver.query_user('marc'))  
+    
+    
+    
+    
