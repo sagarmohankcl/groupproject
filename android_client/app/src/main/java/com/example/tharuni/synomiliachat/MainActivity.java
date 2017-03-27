@@ -23,6 +23,8 @@ import com.example.tharuni.synomiliachat.Connection.MakingConnection;
 import com.example.tharuni.synomiliachat.Fragments.*;
 import com.example.tharuni.synomiliachat.FragContent.*;
 
+import java.net.Socket;
+
 public class MainActivity extends AppCompatActivity implements UsersFragment.OnListFragmentInteractionListener,ChatFragment.OnListFragmentInteractionListener,FriendsFragment.OnListFragmentInteractionListener {
 
     /**
@@ -43,9 +45,13 @@ public class MainActivity extends AppCompatActivity implements UsersFragment.OnL
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-       // Main m = new Main();
-        MakingConnection mk = new MakingConnection("10.40.143.175",5000);
-        mk.execute();
+        // Main m = new Main();
+        //MakingConnection mk = new MakingConnection("10.75.216.224",5001);
+        //mk.execute();
+        try {
+            Socket client = new Socket("10.75.216.224", 5001);
+        }catch(Exception e)
+        {}
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         FragmentManager fragMan = getSupportFragmentManager();

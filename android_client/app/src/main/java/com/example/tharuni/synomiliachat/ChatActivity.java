@@ -35,7 +35,7 @@ public class ChatActivity extends AppCompatActivity {
     private BufferedReader bufferedReader;
     private ChatAdapter chatAdapter;
     private ChatMessage chatMessage;
-    private String CHAT_SERVER_IP = "10.40.145.243";
+    private String CHAT_SERVER_IP = "10.75.216.224";
 
 
     /**
@@ -170,25 +170,25 @@ public class ChatActivity extends AppCompatActivity {
             return null;
         }
 
-    /**
-     * Following method is executed at the end of doInBackground method.
-     */
-    @Override
-    protected void onPostExecute(Void result) {
-        sendBtn.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                final Sender messageSender = new Sender(); // Initialize chat sender AsyncTask.
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-                    messageSender.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-                } else {
-                    messageSender.execute();
+        /**
+         * Following method is executed at the end of doInBackground method.
+         */
+        @Override
+        protected void onPostExecute(Void result) {
+            sendBtn.setOnClickListener(new View.OnClickListener() {
+                public void onClick(View v) {
+                    final Sender messageSender = new Sender(); // Initialize chat sender AsyncTask.
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+                        messageSender.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+                    } else {
+                        messageSender.execute();
+                    }
                 }
-            }
-        });
-        Receiver receiver = new Receiver(); // Initialize chat receiver AsyncTask.
-        receiver.execute();
+            });
+            Receiver receiver = new Receiver(); // Initialize chat receiver AsyncTask.
+            receiver.execute();
+        }
     }
-}
 
     /**
      * This AsyncTask continuously reads the input buffer and show the chat

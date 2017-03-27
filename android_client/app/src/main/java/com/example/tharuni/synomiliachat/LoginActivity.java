@@ -31,6 +31,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -66,6 +67,12 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
+        try {
+            Socket client = new Socket("10.75.216.224", 5001);
+        }catch(Exception e)
+        {}
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
         // Set up the login form.
