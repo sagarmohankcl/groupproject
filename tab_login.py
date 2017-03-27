@@ -294,7 +294,11 @@ class Client(object):
         results ={}
         user = self.search_entry.get()
         #self.chat_button_user = user
-        if user != '':
+        if user == '':
+            self.search_message.set('Please enter a valid name')
+        elif user == self.username:
+            self.search_message.set('Cannot add yourself as a contact')
+        else:
             self.options['search']['USER'] = user            
             results = (self.connect_remote_server(self.options['search']))
             
@@ -312,7 +316,7 @@ class Client(object):
                 else:                
                     self.search_message.set('Contact already added')
             else:
-                self.search_message.set('User not existing')
+                self.search_message.set('User does not exist')
 
             self.search_entry.delete(0,END)
 
@@ -765,7 +769,6 @@ class Client(object):
 #------------------------------------------------------------------------------
 #  not used 
 #------------------------------------------------------------------------------
-
     def client_handler2(self,connected_client, client_address):
         'Method to send data to the connected client'
         sent_message ={'USER': self.username, 'MSG':'Started a chat...'}
@@ -793,7 +796,6 @@ class Client(object):
 
 class VerticalScrolledFrame(Frame):
     """A pure Tkinter scrollable frame that actually works!
-
     * Use the 'interior' attribute to place widgets inside the scrollable frame
     * Construct and pack/place/grid normally
     * This frame only allows vertical scrolling
