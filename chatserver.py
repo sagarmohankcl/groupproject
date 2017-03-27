@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 '''
 Group: Synomilia
 Date:  2017-02-08
@@ -280,3 +281,9 @@ if __name__ == "__main__":
     
     
     
+<<<<<<< HEAD
+=======
+=======
+
+>>>>>>> origin/develop
+>>>>>>> develop
