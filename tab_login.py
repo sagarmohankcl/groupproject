@@ -20,6 +20,8 @@ class Client(object):
     username = ''
     password =''
     connection = ''
+    client_port = 8080
+    user = ''
     l =[]    
     user_tabs_list = {}
     user_send_list = {}
@@ -378,16 +380,16 @@ class Client(object):
 
         #self.chat_tab(self.chat_button_user)
         
-        #if self.chat_connection(name):
-        self.open_chat_tabs[name] = name
-        self.chat_tab(name)
-        #else:
-        #    self.search_message.set(name+' is offline.')
+        if self.chat_connection(name):
+            #self.open_chat_tabs[name] = name
+            self.chat_tab(name)
+        else:
+            self.search_message.set(name+' is offline.')
         
         'set the focus on the new tab'#-----------------------------------------
-        print 'open_chat_tabs + keys + name'
-        print self.open_chat_tabs
-        print self.open_chat_tabs.keys()
+        #print 'open_chat_tabs + keys + name'
+        #print self.open_chat_tabs
+        #print self.open_chat_tabs.keys()
         print name
 
 
@@ -413,7 +415,9 @@ class Client(object):
                 host,port = results['CONNECTION'].split(':')
                 'Connect to the remote client and get the socket information'
                 'Store name and socket details in global list'
-                connected_client = self.connector(host,port)
+                print host
+                print self.client_port
+                connected_client = self.connector(host,self.client_port)
                 self.user_connection[name] = connected_client
                 return True
                 
@@ -431,16 +435,21 @@ class Client(object):
     def connector(self, host,port):
         'Method to initiate TCP connection to client'
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        msg = '{} started a chat...'.format(self.username)
-        data = {'USER': 'marc','MSG':msg}        
+        #msg = '{} started a chat...'.format('random_name')
+        msg = 'started a chat...'
+        data = {'USER': self.username,'MSG':msg}        
         data = json.dumps(data).encode('utf-8')
         
+        print host
+        print port
+
         'Start the connection and send initial message'
         sock.connect((host, port))
+
         sock.send(data)
         'Start thread to receive messages'
         'Can take out host but need to modify the method below'
-        thread.start_new_thread(client_handler,(sock, host))
+        thread.start_new_thread(self.client_handler,(sock, host))
         return sock
 
 
@@ -493,12 +502,12 @@ class Client(object):
             print 'key'
             print str(key)           
             if str(tab) == str(key): #----------------
-                user = (self.tab_name_user.get(key))
+                self.user = (self.tab_name_user.get(key))
                 print 'user'
-                print user
+                print self.user
             else: #------------------------------------
                 print 'bohhhhhhhhhhhhhhh' #----------------------
-        self.get_text(user)
+        self.get_text(self.user)
 
 
 #------------------------------------------------------------------------------
@@ -514,9 +523,9 @@ class Client(object):
             self.update_window(user,message,True)
             #self.update_window(self.username,message)
             self.user_send_list[user].delete(0,END)
-            sent_data['USER']= user
+            sent_data['USER']= self.username
             sent_data['MSG'] = message
-            
+            print sent_data
             'Add message to the outgoing queue'
             self.sent_messages.put_nowait(sent_data)
         
@@ -577,6 +586,8 @@ class Client(object):
                 print msg
                 self.update_window(user,msg,False)
                 print self.user_tabs_list
+                print'open_chat_tabs'
+                print self.open_chat_tabs
                 print 'empty?'
             else:
                 self.update_window(user,msg,False)
@@ -590,7 +601,8 @@ class Client(object):
             #call the send method now? or put this in the send method
             'Check to see if the user is in the user_connection list'            
             for key in self.user_connection.keys():           
-                if sent_message['USER'] ==  str(key):
+                #if sent_message['USER'] ==  str(key):
+                if self.user == str(key):
                     'Get the connection string'
                     print sent_message
                     connected_client = self.user_connection.get(key)                                
@@ -615,7 +627,7 @@ class Client(object):
 
     def connect_remote_server(self,data):
         'Login Method'
-        HOST = '127.0.0.1'
+        HOST = '127.0.0.1'#'10.40.207.97'
         PORT = 5001             
         #with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s: 
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)    
@@ -701,7 +713,7 @@ class Client(object):
 
     def local_server(self):
         'Initialise the instance with an IP address and port number'
-        self.host = '127.0.0.1'#host
+        self.host = ''#host
         self.port = 8080#port        
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)   #Create TCP socket
         self.sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
@@ -769,6 +781,7 @@ class Client(object):
 #------------------------------------------------------------------------------
 #  not used 
 #------------------------------------------------------------------------------
+
     def client_handler2(self,connected_client, client_address):
         'Method to send data to the connected client'
         sent_message ={'USER': self.username, 'MSG':'Started a chat...'}
@@ -796,6 +809,7 @@ class Client(object):
 
 class VerticalScrolledFrame(Frame):
     """A pure Tkinter scrollable frame that actually works!
+
     * Use the 'interior' attribute to place widgets inside the scrollable frame
     * Construct and pack/place/grid normally
     * This frame only allows vertical scrolling
