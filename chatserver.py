@@ -11,7 +11,6 @@ Consists of:
 - listen method. To listen for connections from clients
 - Client_handler method. To 
 '''
-
 import socket
 import threading
 import thread
@@ -282,6 +281,9 @@ if __name__ == "__main__":
     
     
     
+<<<<<<< HEAD
+=======
 =======
 
 >>>>>>> origin/develop
+>>>>>>> develop

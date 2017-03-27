@@ -7,12 +7,20 @@ from Tkinter import *
 #import tkinter as tk  fpr python 3 
 #from tkinter 
 from ttk import *
+<<<<<<< HEAD
+import tkMessageBox as messagebox
+=======
+>>>>>>> develop
 from PIL import Image, ImageTk
 import time
 import encrypt_password
 from encrypt_password import *
 import sqlite3
 import os.path
+<<<<<<< HEAD
+from external_sources import *
+=======
+>>>>>>> develop
 
 
 class Client(object):
@@ -20,8 +28,11 @@ class Client(object):
     username = ''
     password =''
     connection = ''
+<<<<<<< HEAD
+=======
     client_port = 8080
     user = ''
+>>>>>>> develop
     l =[]    
     user_tabs_list = {}
     user_send_list = {}
@@ -44,6 +55,11 @@ class Client(object):
                'get': {'OPTION': 'GET_CONTACTS', 'USER':username}
                }
     
+<<<<<<< HEAD
+    
+
+=======
+>>>>>>> develop
 
     def __init__(self):
         'This method initialises the basic window'
@@ -51,13 +67,25 @@ class Client(object):
         self.root = self.master.master  # short-cut to top-level window
         self.master.pack()  # pack the Frame into root, defaults to side=TOP
         self.root.title('Synomilia Chat')  # name the window
+<<<<<<< HEAD
+        #self.root.protocol("WM_DELETE_WINDOW", self.closing)
+        
+=======
+>>>>>>> develop
         
         self.demoPanel = Frame(self.master, name='demo')  # create a new frame slaved to master
         self.demoPanel.pack()  # pack the Frame into root
 
         # create (notebook) demo panel
+<<<<<<< HEAD
+        self.tab_controller = Notebook(self.demoPanel, name='notebook',width=400, height=550)  # create the ttk.Notebook widget
+        #self.tab_controller = CustomNotebook(self.demoPanel, name='notebook',width=420, height=550)  # create the ttk.Notebook widget
+        self.tab_controller.grid_propagate(True)
+        
+=======
         self.tab_controller = Notebook(self.demoPanel, name='notebook',width=420, height=550)  # create the ttk.Notebook widget
 
+>>>>>>> develop
         # extend bindings to top level window allowing
         #   CTRL+TAB - cycles thru tabs
         #   SHIFT+CTRL+TAB - previous tab
@@ -71,12 +99,32 @@ class Client(object):
         self.demoPanel.after(1000, self.gui_update)
 
 
+<<<<<<< HEAD
+=======
 
+>>>>>>> develop
 #------------------------------------------------------------------------------
 #   It opens the login tab
 #------------------------------------------------------------------------------
 
     def login_tab(self):
+<<<<<<< HEAD
+        'Displays login tab'
+        self.login = Frame(self.tab_controller, name='login')
+        self.tab_controller.add(self.login, text= 'Login')
+        
+        'Add Icon'
+        login_icon_frame = Frame(self.login)
+        login_icon_frame.pack(side='top',expand=1) #without expand, the icon stays fix while registration
+        login_icon = ImageTk.PhotoImage(Image.open('chat-2-icon.png'))
+        login_icon_label = Label(login_icon_frame, image=login_icon)
+        login_icon_label.image = login_icon
+        login_icon_label.pack(fill='both')
+        
+        'Add labels and buttons'
+        self.credential_frame = LabelFrame(self.login, text='Login')#, height=50, width=100)
+        self.credential_frame.pack(expand=1,side='top')
+=======
         'Displays login Form '
 
         frame = Frame(self.tab_controller, name='login')
@@ -98,6 +146,7 @@ class Client(object):
         'Add labels and buttons'
         self.credential_frame = LabelFrame(self.login, text='Login')#, height=50, width=100)
         self.credential_frame.grid(column=0,row=1,padx=105, pady=4, ipadx=2, ipady=2, sticky='w')
+>>>>>>> develop
 
         username_label = Label(self.credential_frame, text='Username: ')
         username_label.grid(column=1, row=1, sticky=W)
@@ -113,12 +162,20 @@ class Client(object):
                 
         submit_button = Button(self.credential_frame, text='Submit')
         submit_button.grid(column=2,row=4, columnspan=2, sticky='e')
+<<<<<<< HEAD
+        submit_button.bind("<ButtonRelease-1>",self.login_submit)
+=======
         submit_button.bind("<Button-1>",self.login_submit)
+>>>>>>> develop
         submit_button.bind("<Return>",self.login_submit)
 
         register_button = Button(self.credential_frame, text='Register')
         register_button.grid(column=1,row=4, columnspan=2, sticky='w')
+<<<<<<< HEAD
+        register_button.bind("<ButtonRelease-1>",self.register_newuser)
+=======
         register_button.bind("<Button-1>",self.register_newuser)
+>>>>>>> develop
         register_button.bind("<Return>",self.register_newuser)
 
         self.alert_message = StringVar()
@@ -145,6 +202,10 @@ class Client(object):
                 self.tab_controller.hide(self.login)                
             else:
                 self.alert_message.set('Username or password mismatching')
+<<<<<<< HEAD
+                self.alert_label.after(1000,self.alert_message.set(''))
+=======
+>>>>>>> develop
         else:
             self.alert_message.set('Username or password missing')
             
@@ -157,6 +218,12 @@ class Client(object):
     def register_newuser(self, event):
         'Open new window and allow registration of a new user'
         self.register_w = Toplevel()
+<<<<<<< HEAD
+
+        self.register_w.protocol("WM_DELETE_WINDOW", self.closing)
+
+=======
+>>>>>>> develop
         self.credential_frame_R = LabelFrame(self.register_w, text='Registration new user')
         self.credential_frame_R.grid(column=0,row=1,padx=85, pady=4, ipadx=2, ipady=2, sticky='w')
 
@@ -164,6 +231,10 @@ class Client(object):
         username_label.grid(column=1, row=1, sticky=W)
         self.username_entry = Entry(self.credential_frame_R)
         self.username_entry.grid(column=2, row=1, pady=3,sticky=E)
+<<<<<<< HEAD
+        self.username_entry.focus_set()
+=======
+>>>>>>> develop
 
         self.password_entry_1 = Entry(self.credential_frame_R, show="*")
         self.password_entry_1.grid(column=2, row=2, pady=3,sticky=E)
@@ -181,7 +252,25 @@ class Client(object):
         submit_button.grid(column=2,row=4, columnspan=2, sticky='e')
         submit_button.bind("<Button-1>",self.register_submit)
         submit_button.bind("<Return>",self.register_submit)
+<<<<<<< HEAD
+        
+        self.credential_frame.pack_forget() # makes the credential frame disappear
+
+#------------------------------------------------------------------------------
+#   It allows to close registration window and go back to login page
+#------------------------------------------------------------------------------
+
+    def closing(self):
+            if messagebox.askokcancel("Quit", "Do you want to go back to the login page?"):
+                self.register_w.destroy()
+                #self.credential_frame.grid(column=0,row=1,padx=105, pady=4, ipadx=2, ipady=2, sticky='w')
+                self.credential_frame.pack(expand=1,side='top')
+            else:
+                pass
+
+=======
         self.tab_controller.hide(self.login)   # 
+>>>>>>> develop
 
 
 #------------------------------------------------------------------------------
@@ -192,7 +281,11 @@ class Client(object):
         'Gets the text from the username and password field on the login tab'
         'Calls the connect_remote server method'
         'Close registration window'
+<<<<<<< HEAD
+        'Hides the login tab'
+=======
         #'Hides the login tab'
+>>>>>>> develop
         'Calls the Main tab'
         self.username = self.username_entry.get()
         password_1 = self.password_entry_1.get() 
@@ -204,7 +297,11 @@ class Client(object):
             self.options['new']['PASSWORD'] = encrypt(self.password)
             if self.connect_remote_server(self.options['new']):             
                 self.contacts_tab()
+<<<<<<< HEAD
+                self.tab_controller.hide(self.login)
+=======
                 #self.tab_controller.hide(self.login)
+>>>>>>> develop
                 self.register_w.destroy()                
             else:
                 self.username_entry.delete(0,END)
@@ -229,6 +326,38 @@ class Client(object):
         'Displays the tab with contacts'
         self.contacts = Frame(self.tab_controller, name='contacts')
         self.tab_controller.add(self.contacts, text='Contacts')
+<<<<<<< HEAD
+        
+        'Add Icon'
+        contacts_icon_frame = Frame(self.contacts)
+        contacts_icon_frame.pack(side='top')
+        
+        contacts_icon = ImageTk.PhotoImage(Image.open('chat-2-icon_small.png'),width=5,height=5)
+        contacts_icon_label = Label(contacts_icon_frame, image=contacts_icon, width=5)
+        contacts_icon_label.image = contacts_icon
+        contacts_icon_label.pack(side='right', padx=5,pady=5)
+        
+        msg = 'Hello '+self.username+',\nthis is Synomilia Chat 1.0.\nEnjoy!'
+        welcome_msg = Label(contacts_icon_frame,text=msg,foreground='blue',justify='center')
+        welcome_msg.pack(side='left',fill='both',expand=1,padx=10)
+        
+        'Add listbox to the frame'
+        listbox_frame = Frame(self.contacts)
+        listbox_frame.pack(side='top')
+        
+        self.contacts_listbox = VerticalScrolledFrame(listbox_frame)
+        
+        'Get previously added contacts and display'
+        has_contacts = self.get_contacts()
+        if has_contacts:
+            self.display_contacts()
+        
+        'Add Search'
+        self.search_entry = Entry(listbox_frame)
+        self.search_entry.grid(column=0, row=1, padx=1, pady=3,sticky='w')
+        search_button = Button(listbox_frame, text='Add Contact')
+        search_button.grid(column=1,row=1, sticky='e')
+=======
         contacts_frame = Frame(self.contacts)
         contacts_frame.grid(column=0, row=0, padx=4, pady=4, columnspan=2, sticky='newss')
 
@@ -259,12 +388,23 @@ class Client(object):
         self.search_entry.grid(column=0, row=2, padx=1, pady=3,sticky='w')
         search_button = Button(listbox_frame, text='Add Contact')
         search_button.grid(column=0,row=2, sticky='e')
+>>>>>>> develop
         search_button.bind("<Button-1>",self.contacts_search)
         search_button.bind("<Return>",self.contacts_search)
 
         'Label for communication about results'
         self.search_message = StringVar()
         self.search_label = Label(listbox_frame, textvariable=self.search_message, foreground='blue')
+<<<<<<< HEAD
+        self.search_label.grid(row=2,columnspan=3)
+
+        'Add Logout Button'
+        logout_frame = Frame(self.contacts)
+        logout_frame.pack(side='top')
+        logout_button = Button(logout_frame, text='Logout')
+        logout_button.pack()
+        logout_button.bind("<ButtonRelease-1>",self.logout)
+=======
         self.search_label.grid(columnspan=3)
 
         'Add Logout Button'
@@ -273,6 +413,7 @@ class Client(object):
         logout_button = Button(logout_frame, text='Logout')
         logout_button.grid(column=0,row=3, sticky='e')
         logout_button.bind("<Button-1>",self.logout)
+>>>>>>> develop
         logout_button.bind("<Return>",self.logout)
 
 
@@ -281,8 +422,20 @@ class Client(object):
 #------------------------------------------------------------------------------
     
     def logout(self,event):
+<<<<<<< HEAD
+        if messagebox.askokcancel("Log Out", "Are you sure?"):
+            self.tab_controller.hide(self.contacts)
+            for tab in self.tab_name_user.keys():
+                self.tab_controller.hide(tab) 
+            self.login_tab()
+        else:
+            pass
+
+        
+=======
         self.tab_controller.hide(self.contacts) 
         self.login_tab()
+>>>>>>> develop
 
 
 #------------------------------------------------------------------------------
@@ -295,33 +448,60 @@ class Client(object):
         #'Returns the result'
         results ={}
         user = self.search_entry.get()
+<<<<<<< HEAD
+        if user != '':
+=======
         #self.chat_button_user = user
         if user == '':
             self.search_message.set('Please enter a valid name')
         elif user == self.username:
             self.search_message.set('Cannot add yourself as a contact')
         else:
+>>>>>>> develop
             self.options['search']['USER'] = user            
             results = (self.connect_remote_server(self.options['search']))
             
             if results['USER']!= '':
                 'Pop up window to notify the user'
                 if self.add_contact(results):
+<<<<<<< HEAD
+                    self.search_message.set(user + ' added')
+                    self.root.after(3000,self.clean_label)
+                    'The user is added to the local dictionary'
+=======
                     self.search_message.set('Contact added')
                     'The user is added to the local dictionary'
                     #self.contacts_dict['USER'] = user
+>>>>>>> develop
                     'Display new contact'
                     'Add new contact to contacts_dict'
                     self.contacts_dict[results['USER']] = {}
                     self.display_contacts()
 
                 else:                
+<<<<<<< HEAD
+                    self.search_message.set(user + ' already added')
+                    self.root.after(3000,self.clean_label)
+            else:
+                self.search_message.set(user + ' not existing')
+                self.root.after(3000,self.clean_label)
+
+            self.search_entry.delete(0,END)
+
+#------------------------------------------------------------------------------
+#   It cleans the content of the search_label
+#------------------------------------------------------------------------------
+
+    def clean_label(self):
+        self.search_message.set('')
+=======
                     self.search_message.set('Contact already added')
             else:
                 self.search_message.set('User does not exist')
 
             self.search_entry.delete(0,END)
 
+>>>>>>> develop
 
 #------------------------------------------------------------------------------
 #   It connects to server (add)
@@ -346,6 +526,13 @@ class Client(object):
         results = self.connect_remote_server(self.options['get'])
         for each_contact in results:
             self.contacts_dict[each_contact] = {}
+<<<<<<< HEAD
+        if len(self.contacts_dict) > 0:
+            return True
+        else:
+            return False
+=======
+>>>>>>> develop
 
 
 #------------------------------------------------------------------------------
@@ -353,14 +540,23 @@ class Client(object):
 #------------------------------------------------------------------------------
 
     def display_contacts(self):
+<<<<<<< HEAD
+        'grid the scrollbar'
+        self.contacts_listbox.grid(columnspan=2,row=0, pady=4, ipadx=2, ipady=2, sticky='nswe')
+=======
+>>>>>>> develop
         'empty the display and fill it again'
         for child in self.contacts_listbox.interior.winfo_children():
             child.destroy()
         'Create one button for each contact'
         for username in sorted(self.contacts_dict.keys()):
+<<<<<<< HEAD
+            btn = Button(self.contacts_listbox.interior, width=20, text= username,
+=======
             btn = Button(self.contacts_listbox.interior, width=20, #relief=FLAT, 
                 #bg="gray99", fg="purple3",font="Dosis",
                 text= username,
+>>>>>>> develop
                 command=lambda name=username:self.chat_button_clicked(name))
             #btn.bind("<Button-1>",self.chat_button_clicked)
             #btn.bind("<Return>",self.chat_button_clicked)
@@ -380,6 +576,18 @@ class Client(object):
 
         #self.chat_tab(self.chat_button_user)
         
+<<<<<<< HEAD
+        #if self.chat_connection(name):
+        self.open_chat_tabs[name] = name
+        tab_name = self.chat_tab(name)  # other options without returning?
+        self.tab_controller.select(tab_name) #'set the focus on the new tab'
+        #else:
+        #    self.search_message.set(name+' is offline.')
+
+        print 'open_chat_tabs + keys + name'
+        print self.open_chat_tabs
+        print self.open_chat_tabs.keys()
+=======
         if self.chat_connection(name):
             #self.open_chat_tabs[name] = name
             self.chat_tab(name)
@@ -390,6 +598,7 @@ class Client(object):
         #print 'open_chat_tabs + keys + name'
         #print self.open_chat_tabs
         #print self.open_chat_tabs.keys()
+>>>>>>> develop
         print name
 
 
@@ -415,9 +624,13 @@ class Client(object):
                 host,port = results['CONNECTION'].split(':')
                 'Connect to the remote client and get the socket information'
                 'Store name and socket details in global list'
+<<<<<<< HEAD
+                connected_client = self.connector(host,port)
+=======
                 print host
                 print self.client_port
                 connected_client = self.connector(host,self.client_port)
+>>>>>>> develop
                 self.user_connection[name] = connected_client
                 return True
                 
@@ -435,6 +648,18 @@ class Client(object):
     def connector(self, host,port):
         'Method to initiate TCP connection to client'
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+<<<<<<< HEAD
+        msg = '{} started a chat...'.format(self.username)
+        data = {'USER': 'marc','MSG':msg}        
+        data = json.dumps(data).encode('utf-8')
+        
+        'Start the connection and send initial message'
+        sock.connect((host, port))
+        sock.send(data)
+        'Start thread to receive messages'
+        'Can take out host but need to modify the method below'
+        thread.start_new_thread(client_handler,(sock, host))
+=======
         #msg = '{} started a chat...'.format('random_name')
         msg = 'started a chat...'
         data = {'USER': self.username,'MSG':msg}        
@@ -450,6 +675,7 @@ class Client(object):
         'Start thread to receive messages'
         'Can take out host but need to modify the method below'
         thread.start_new_thread(self.client_handler,(sock, host))
+>>>>>>> develop
         return sock
 
 
@@ -464,6 +690,38 @@ class Client(object):
         'uncomment if tab needs to be active when msg received'
         #self.tab_controller.select(tab_name) take out bottom too
         self.tab_name_user[tab_name] = name
+<<<<<<< HEAD
+        
+        exit_frame = Frame(tab_name)
+        exit_frame.pack()
+        #exit_frame.grid(row=0)
+        
+        info_msg = 'This is your conversation with '+name
+        info = Label(exit_frame,text=info_msg)
+        info.pack(side='left',fill='x',expand=1, ipadx=10,ipady=5)
+        
+        close_conversation = Button(exit_frame,text='Close',command=lambda name=tab_name:self.leave_conversation(name))
+        close_conversation.pack(side='right')
+        
+        conversation_frame = LabelFrame(tab_name, text=' Conversation ')
+        conversation_frame.pack(fill='both',expand=1)
+        #conversation_frame.grid(column=0, row=1, padx=8, pady=4)
+        
+        display = Text(conversation_frame, wrap='word',bg="white", width=45, height=27, name='display', state='disabled') #witdh= number of characters that can be typed
+        display.grid(column=0, row=0, sticky='nswe')
+        self.user_tabs_list[name] = display
+        scroll = Scrollbar(conversation_frame,command=display.yview)
+        scroll.grid(column=1,row=0,sticky='ns')
+        display.config(yscrollcommand= scroll.set)
+
+        'Box to type message'
+        submit_text = Entry(conversation_frame, width=40)
+        submit_text.grid(column=0, row=1, padx=10, pady=5, ipady=5,sticky='sw')
+        submit_text.focus_set()
+        'Send Button'
+        send = Button(conversation_frame, text="Send")
+        send.grid(column=0, row=1, padx=10,ipady=5, sticky='se')
+=======
         conversation_frame = LabelFrame(tab_name, text=' Conversation ')
         conversation_frame.grid(column=0, row=0, padx=8, pady=4)
         
@@ -481,13 +739,20 @@ class Client(object):
         'Send Button'
         send = Button(conversation_frame, text="Send")
         send.grid(column=0, row=2, padx=10,ipady=4, sticky=E)
+>>>>>>> develop
         #check here - take out
         self.user_send_list[name] = submit_text #-----------------------------------
         print 'chat tab: user_send_list' #--------------------------------
         print self.user_send_list[name] #-------------------------------
+<<<<<<< HEAD
+        send.bind("<ButtonRelease-1>",self.chat_send_button)
+        send.bind("<Return>",self.chat_send_button)
+        return tab_name #---------------------------------------------------------
+=======
         send.bind("<Button-1>",self.chat_send_button)
         send.bind("<Return>",self.chat_send_button)
         
+>>>>>>> develop
 
 #------------------------------------------------------------------------------
 #   It starts the process for sending a message
@@ -502,12 +767,19 @@ class Client(object):
             print 'key'
             print str(key)           
             if str(tab) == str(key): #----------------
+<<<<<<< HEAD
+                user = (self.tab_name_user.get(key))
+                print 'user'
+                print user
+        self.get_text(user)
+=======
                 self.user = (self.tab_name_user.get(key))
                 print 'user'
                 print self.user
             else: #------------------------------------
                 print 'bohhhhhhhhhhhhhhh' #----------------------
         self.get_text(self.user)
+>>>>>>> develop
 
 
 #------------------------------------------------------------------------------
@@ -523,12 +795,32 @@ class Client(object):
             self.update_window(user,message,True)
             #self.update_window(self.username,message)
             self.user_send_list[user].delete(0,END)
+<<<<<<< HEAD
+            sent_data['USER']= user
+            sent_data['MSG'] = message
+            
+            'Add message to the outgoing queue'
+            self.sent_messages.put_nowait(sent_data)
+
+        
+#------------------------------------------------------------------------------
+# It closes the chat_tab with 'name'
+#------------------------------------------------------------------------------
+
+    def leave_conversation(self,name):
+        if messagebox.askokcancel("Close", "Are you sure?"):
+            self.tab_controller.hide(name)
+            self.tab_controller.select(self.contacts)
+
+
+=======
             sent_data['USER']= self.username
             sent_data['MSG'] = message
             print sent_data
             'Add message to the outgoing queue'
             self.sent_messages.put_nowait(sent_data)
         
+>>>>>>> develop
                   
 #------------------------------------------------------------------------------
 # not used
@@ -552,10 +844,20 @@ class Client(object):
         print contact
 
         self.user_tabs_list[contact].configure(state='normal') 
+<<<<<<< HEAD
+        if is_myself:
+            self.user_tabs_list[contact].tag_config('me',foreground='blue')               
+            self.user_tabs_list[contact].insert(END,'{}: {}\n \n'.format(self.username,message),'me')
+        else:
+            self.user_tabs_list[contact].tag_config('contact',foreground='black')    
+            self.user_tabs_list[contact].insert(END,'{}: {}\n \n'.format(contact,message),'contact')
+        self.user_tabs_list[contact].see(END)
+=======
         if is_myself:               
             self.user_tabs_list[contact].insert(END,'{}: {}\n \n'.format(self.username,message))
         else:
             self.user_tabs_list[contact].insert(END,'{}: {}\n \n'.format(contact,message))
+>>>>>>> develop
         self.user_tabs_list[contact].configure(state='disabled')
         
         
@@ -586,8 +888,11 @@ class Client(object):
                 print msg
                 self.update_window(user,msg,False)
                 print self.user_tabs_list
+<<<<<<< HEAD
+=======
                 print'open_chat_tabs'
                 print self.open_chat_tabs
+>>>>>>> develop
                 print 'empty?'
             else:
                 self.update_window(user,msg,False)
@@ -601,8 +906,12 @@ class Client(object):
             #call the send method now? or put this in the send method
             'Check to see if the user is in the user_connection list'            
             for key in self.user_connection.keys():           
+<<<<<<< HEAD
+                if sent_message['USER'] ==  str(key):
+=======
                 #if sent_message['USER'] ==  str(key):
                 if self.user == str(key):
+>>>>>>> develop
                     'Get the connection string'
                     print sent_message
                     connected_client = self.user_connection.get(key)                                
@@ -627,7 +936,11 @@ class Client(object):
 
     def connect_remote_server(self,data):
         'Login Method'
+<<<<<<< HEAD
+        HOST = '127.0.0.1'
+=======
         HOST = '127.0.0.1'#'10.40.207.97'
+>>>>>>> develop
         PORT = 5001             
         #with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s: 
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)    
@@ -713,7 +1026,11 @@ class Client(object):
 
     def local_server(self):
         'Initialise the instance with an IP address and port number'
+<<<<<<< HEAD
+        self.host = '127.0.0.1'#host
+=======
         self.host = ''#host
+>>>>>>> develop
         self.port = 8080#port        
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)   #Create TCP socket
         self.sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
@@ -802,6 +1119,11 @@ class Client(object):
     
 
 
+<<<<<<< HEAD
+
+
+
+=======
 #------------------------------------------------------------------------------
 # Class for scrollable frame - buttons in contacts_tab 
 # @author: http://stackoverflow.com/questions/31762698/dynamic-button-with-scrollbar-in-tkinter-python
@@ -851,6 +1173,7 @@ class VerticalScrolledFrame(Frame):
                 # update the inner frame's width to fill the canvas
                 canvas.itemconfigure(interior_id, width=canvas.winfo_width())
         canvas.bind('<Configure>', _configure_canvas)
+>>>>>>> develop
 
 
 
@@ -876,7 +1199,12 @@ def run():
         
     chat = Client()
     'Start mainloop'
+<<<<<<< HEAD
+    chat.master.mainloop()
+    #chat.root.geometry('100x300')   
+=======
     chat.master.mainloop()   
+>>>>>>> develop
     #chat.window.mainloop()   
  
            
