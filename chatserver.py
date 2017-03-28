@@ -1,4 +1,4 @@
-<<<<<<< HEAD
+
 '''
 Group: Synomilia
 Date:  2017-02-08
@@ -19,9 +19,9 @@ import sqlite3
 import datetime
 
 
-#------------------------------------------------------------------------------
-#   Multithreaded TCP server to allow clients to connect to chat to each other
-#------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------------------------
+#   Multithreaded TCP server, allows remote clients to register and chat with other remote clients
+#-------------------------------------------------------------------------------------------------
 
 class Chatserver(object):
     def __init__(self, host, port):
@@ -38,7 +38,7 @@ class Chatserver(object):
 
     def listen(self):
         try:
-            print('Server listening on {}:{}'.format(self.host,self.port))
+            print('Chatserver listening on {}:{}'.format(self.host,self.port))
             self.sock.listen(10)
         except:
             print('Server not listening')
@@ -51,8 +51,8 @@ class Chatserver(object):
             connected_client.settimeout(60)   
             'Call thread with the client_handler method'
             thread.start_new_thread(self.client_handler,(connected_client, client_address))
-            print('{}'.format(client_address))
-            print('{}'.format(connected_client))
+            print "Connected client ", '{}'.format(client_address)
+            #print('{}'.format(connected_client))
 
 #------------------------------------------------------------------------------
 #   Handles the client connection depending on the client request
@@ -82,7 +82,7 @@ class Chatserver(object):
                 return False
 
 #------------------------------------------------------------------------------
-#   Check which option the connected client wants
+#   Checks the action the connected client wants to be taken
 #------------------------------------------------------------------------------
 
     def check_options(self, option, received_dict):      
@@ -105,23 +105,22 @@ class Chatserver(object):
         return result
 
 #------------------------------------------------------------------------------
-#   Adds a user to the database
+#   Adds a user to the chatserver database
 #------------------------------------------------------------------------------
 
     def new_user(self, received_dict):
-        
         user = received_dict["USER"].lower()
-        print received_dict  #["USER"]-----------------
+        print "Registering " + received_dict["USER"] + "..."
         dt = str(datetime.datetime.now())        
         try: 
             con = sqlite3.connect('chatserver.db')
             cur = con.cursor()
-            print 'try insert'  #------------
+            print 'try insert'  
             cur.execute("INSERT INTO users VALUES (?,?,?,?)",(received_dict['USER'].lower(),
                                                               received_dict['PASSWORD'],
                                                               received_dict['CONNECTION'],
                                                               dt))        
-            print 'inserted'  #-----------------
+            print received_dict['USER'] + "added to the database"  
             con.commit()      
         except:
             return False
@@ -134,20 +133,18 @@ class Chatserver(object):
 
     def login(self, received_dict):
         user = self.query_user(received_dict)
-        print user  #---------------
         if user['PASSWORD'] == received_dict['PASSWORD']: 
-            print 'logged in' #---------------------        
+            print received_dict['USER'] + " logged in"       
             return self.update_user(received_dict)              
         else:
             return False
  
-#------------------------------------------------------------------------------
-#   Search for a user to the database
-#------------------------------------------------------------------------------       
+#-------------------------------------------------------------------------
+#   Queries for a user in the chatserver database and fetches its details 
+#-------------------------------------------------------------------------     
 
     def query_user(self, received_dict):
         details = {'USER':'','PASSWORD':'','CONNECTION':'','DATE':''}        
-        
         con = sqlite3.connect('chatserver.db')
         cur = con.cursor()
         try:
@@ -160,7 +157,6 @@ class Chatserver(object):
                 details['DATE'] = record[3]
         except:
             return False 
-    
         con.close()        
         return details
 
@@ -173,7 +169,6 @@ class Chatserver(object):
         cur = con.cursor()
         dt = str(datetime.datetime.now())
         try:
-        
             cur.execute("Update users set date = ?, connection = ? where username = ?",
                         (dt,
                          received_dict['CONNECTION'],
@@ -185,12 +180,11 @@ class Chatserver(object):
         return True
 
 
-#------------------------------------------------------------------------------
-#    Search for a user in the database and return result to the client
-#------------------------------------------------------------------------------  
+#-----------------------------------------------------------------------------------
+#    Searches for a user in the chatserver database and return details to the client
+#-----------------------------------------------------------------------------------  
 
     def search_user(self, received_dict):
-
         details = {'USER':'','DATE':''} 
         con = sqlite3.connect('chatserver.db')
         cur = con.cursor()
@@ -206,7 +200,7 @@ class Chatserver(object):
         return details
 
 #------------------------------------------------------------------------------
-#    Add a contact to the contacts table in server db for a client
+#    Adds a contact to the contacts table in chatserver database for a client
 #------------------------------------------------------------------------------  
 
     def add_user(self, received_dict):
@@ -215,10 +209,10 @@ class Chatserver(object):
         try: 
             con = sqlite3.connect('chatserver.db')
             cur = con.cursor()
-            print 'try inserting contact'  #------------
+            #print 'try inserting contact'  
             cur.execute("INSERT INTO contacts VALUES (?,?)",(received_dict['USER'].lower(),
                                                               received_dict['CONTACT'].lower()))        
-            print 'inserted contact'  #-----------------
+            #print 'inserted contact'  
             con.commit()      
         except:
             return False
@@ -226,7 +220,7 @@ class Chatserver(object):
         return True
 
 #------------------------------------------------------------------------------
-#    Return contact list to client from contacts table in db
+#    Returns contact list to client from contacts table in chatserver database
 #------------------------------------------------------------------------------  
 
     def get_contacts(self, received_dict):
@@ -243,9 +237,9 @@ class Chatserver(object):
         con.close()
         return details
  
-#------------------------------------------------------------------------------
-#    Create database to be used by server
-#------------------------------------------------------------------------------  
+#-------------------------------------------------------------------------------------
+#    Create chatserver database for storing registered users and contacts of each user
+#------------------------------------------------------------------------------------- 
 
 def create_db():
     con = sqlite3.connect('chatserver.db')
@@ -281,9 +275,3 @@ if __name__ == "__main__":
     
     
     
-<<<<<<< HEAD
-=======
-=======
-
->>>>>>> origin/develop
->>>>>>> develop
