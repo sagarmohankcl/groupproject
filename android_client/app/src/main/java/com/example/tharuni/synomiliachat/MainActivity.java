@@ -159,11 +159,11 @@ public class MainActivity extends AppCompatActivity implements UsersFragment.OnL
         public Fragment getItem(int position) {
             switch (position) {
                 case 0:
-                    return new UsersFragment();
+                    return new FriendsFragment();
                 case 1:
                     return new ChatFragment();
                 case 2:
-                    return new FriendsFragment();
+                    return new UsersFragment();
                 // getItem is called to instantiate the fragment for the given page.
                 // Return a PlaceholderFragment (defined as a static inner class below).
             }
