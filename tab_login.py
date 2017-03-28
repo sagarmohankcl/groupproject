@@ -16,10 +16,11 @@ import sqlite3
 import os.path
 from external_sources import *
 
-
+#------------------------------------------------------------------------------
+#   Chat appliccation client
+#------------------------------------------------------------------------------
 
 class Client(object):
-    'Chat application Client'
     username = ''
     password =''
     connection = ''
@@ -36,9 +37,9 @@ class Client(object):
     sent_messages = queue.Queue()
     
     open_chat_tabs = {}
-    contacts_dict = {} #{username:{'CONNECTION':connection,'TIME':time}} 
+    contacts_dict = {} 
 
-    options = {'login': {'OPTION':'LOGIN','USER':username,'PASSWORD':password},
+    request = {'login': {'OPTION':'LOGIN','USER':username,'PASSWORD':password},
                'query': {'OPTION': 'QUERY_USER','USER':username},
                'update': {'OPTION': 'UPDATE_USER','USER':username},
                'new' : {'OPTION':'NEW_USER','USER': username,'PASSWORD': password},
@@ -47,9 +48,11 @@ class Client(object):
                'get': {'OPTION': 'GET_CONTACTS', 'USER':username}
                }
     
+#------------------------------------------------------------------------------
+#   Initialises the basic window
+#------------------------------------------------------------------------------
 
     def __init__(self):
-        'This method initialises the basic window'
         self.master = Frame(name='general')
         self.root = self.master.master  # short-cut to top-level window
         self.master.pack()  # pack the Frame into root, defaults to side=TOP
@@ -65,7 +68,6 @@ class Client(object):
         #self.tab_controller = CustomNotebook(self.demoPanel, name='notebook',width=420, height=550)  # create the ttk.Notebook widget
         self.tab_controller.grid_propagate(True)
         
-=======
         self.tab_controller = Notebook(self.demoPanel, name='notebook',width=420, height=550)  # create the ttk.Notebook widget
 
         # extend bindings to top level window allowing
@@ -81,11 +83,10 @@ class Client(object):
         self.demoPanel.after(1000, self.gui_update)
 
 #------------------------------------------------------------------------------
-#   It opens the login tab
+#   Displays the login page
 #------------------------------------------------------------------------------
 
     def login_tab(self):
-        'Displays login tab'
         self.login = Frame(self.tab_controller, name='login')
         self.tab_controller.add(self.login, text= 'Login')
         
@@ -128,10 +129,9 @@ class Client(object):
         self.alert_label = Label(self.credential_frame, textvariable=self.alert_message, foreground='red')
         self.alert_label.grid(columnspan=3)
 
-
-#------------------------------------------------------------------------------
-#   It connects to server and open contacts tab
-#------------------------------------------------------------------------------
+#--------------------------------------------------------------------------------------
+#   Connects to the remote chatserver and displays the current contact list of the user
+#--------------------------------------------------------------------------------------
 
     def login_submit(self,event):
         'Gets the text from the username and password field on the login tab'
@@ -141,28 +141,28 @@ class Client(object):
         self.username = self.username_entry.get()
         self.password = self.password_entry.get()        
         if self.username != '' and self.password != '':
-            self.options['login']['USER'] = self.username
-            self.options['login']['PASSWORD'] = encrypt(self.password)
-            if self.connect_remote_server(self.options['login']):             
+            self.request['login']['USER'] = self.username
+            self.request['login']['PASSWORD'] = encrypt(self.password)
+            if self.connect_remote_server(self.request['login']):  
+                print self.username + " is online"           
                 self.contacts_tab()
-                self.tab_controller.hide(self.login)                
+                self.tab_controller.hide(self.login) 
+                              
             else:
+                #print self.password
                 self.alert_message.set('Username or password mismatching')
-
-                self.alert_label.after(1000,self.alert_message.set(''))
+                self.root.after(2000,self.clean_label)
         else:
             self.alert_message.set('Username or password missing')
-            
-
+            self.root.after(2000,self.clean_label)
 
 #------------------------------------------------------------------------------
-#   It opens a pop up window for registration 
+#   Displays a pop up window for registering a new user
 #------------------------------------------------------------------------------
     
     def register_newuser(self, event):
         'Open new window and allow registration of a new user'
         self.register_w = Toplevel()
-
         self.register_w.protocol("WM_DELETE_WINDOW", self.closing)
 
         self.credential_frame_R = LabelFrame(self.register_w, text='Registration new user')
@@ -172,7 +172,6 @@ class Client(object):
         username_label.grid(column=1, row=1, sticky=W)
         self.username_entry = Entry(self.credential_frame_R)
         self.username_entry.grid(column=2, row=1, pady=3,sticky=E)
-
         self.username_entry.focus_set()
 
         self.password_entry_1 = Entry(self.credential_frame_R, show="*")
@@ -195,7 +194,7 @@ class Client(object):
         self.credential_frame.pack_forget() # makes the credential frame disappear
 
 #------------------------------------------------------------------------------
-#   It allows to close registration window and go back to login page
+#   Closes registration window and returns to the login page
 #------------------------------------------------------------------------------
 
     def closing(self):
@@ -206,16 +205,15 @@ class Client(object):
             else:
                 pass
 
-
 #------------------------------------------------------------------------------
-#   It connects to server and open contacts tab
+#   Connects to server and submits user's credentials for registration
 #------------------------------------------------------------------------------
 
     def register_submit(self,event):
         'Gets the text from the username and password field on the login tab'
         'Calls the connect_remote server method'
         'Close registration window'
-        #'Hides the login tab'
+        'Hides the login tab'
         'Calls the Main tab'
         self.username = self.username_entry.get()
         password_1 = self.password_entry_1.get() 
@@ -223,16 +221,18 @@ class Client(object):
 
         if self.username != '' and password_1 != '' and (password_1 == password_2):
             self.password = password_1
-            self.options['new']['USER'] = self.username
-            self.options['new']['PASSWORD'] = encrypt(self.password)
-            if self.connect_remote_server(self.options['new']):             
+            self.request['new']['USER'] = self.username
+            self.request['new']['PASSWORD'] = encrypt(self.password)
+            if self.connect_remote_server(self.request['new']):             
                 self.contacts_tab()
                 self.tab_controller.hide(self.login)
-                self.register_w.destroy()                
+                self.register_w.destroy()    
+                print self.username + " registered successfully"  
+                print self.username + " is online"          
             else:
                 self.username_entry.delete(0,END)
                 self.password_entry_1.delete(0,END)
-                'Pop up window to notify the user'   # make a label?-----------------
+                'Pop up window to notify the user'   
                 notify = Toplevel()
                 notify.title('Failed Registration')
                 msg = Message(notify, text='Registration Failed')
@@ -241,19 +241,15 @@ class Client(object):
             alert_label = Label(self.credential_frame_R, text='Username missing or password mismatching', foreground='red')
             alert_label.grid(columnspan=3)
 
-
-
 #------------------------------------------------------------------------------
-#   Main page of the app:
+#   Displays the chat app interface with the user's contact list
 #------------------------------------------------------------------------------
 
     def contacts_tab(self):
-        
-        'Displays the tab with contacts'
         self.contacts = Frame(self.tab_controller, name='contacts')
         self.tab_controller.add(self.contacts, text='Contacts')
         
-        'Add Icon'
+        'Adding app icon'
         contacts_icon_frame = Frame(self.contacts)
         contacts_icon_frame.pack(side='top')
         
@@ -269,7 +265,6 @@ class Client(object):
         'Add listbox to the frame'
         listbox_frame = Frame(self.contacts)
         listbox_frame.pack(side='top')
-        
         self.contacts_listbox = VerticalScrolledFrame(listbox_frame)
         
         'Get previously added contacts and display'
@@ -282,13 +277,11 @@ class Client(object):
         self.search_entry.grid(column=0, row=1, padx=1, pady=3,sticky='w')
         search_button = Button(listbox_frame, text='Add Contact')
         search_button.grid(column=1,row=1, sticky='e')
-
         search_button.bind("<Button-1>",self.contacts_search)
         search_button.bind("<Return>",self.contacts_search)
 
-        'Label for communication about results'
-        self.search_message = StringVar()
-        self.search_label = Label(listbox_frame, textvariable=self.search_message, foreground='blue')
+        'Label for communication about response'
+        self.search_label = Label(listbox_frame, textvariable=self.alert_message, foreground='blue')
         self.search_label.grid(row=2,columnspan=3)
 
         'Add Logout Button'
@@ -299,9 +292,8 @@ class Client(object):
         logout_button.bind("<ButtonRelease-1>",self.logout)
         logout_button.bind("<Return>",self.logout)
 
-
 #------------------------------------------------------------------------------
-#   It disconnects to server and returns to login tab
+#   Disconnects the connection from server and returns to login page
 #------------------------------------------------------------------------------
     
     def logout(self,event):
@@ -313,76 +305,77 @@ class Client(object):
         else:
             pass
 
+#-----------------------------------------------------------------------------------------
+#   Connects to the remote chatserver to search if the contact entered by the user exists
+#-----------------------------------------------------------------------------------------
 
-#------------------------------------------------------------------------------
-#   It connects to server (search) for adding new contacts
-#------------------------------------------------------------------------------
-
-    def contacts_search(self,event):
-        'Gets the text from the search field onthe login tab'
+    def contacts_search(self, event):
+        'Gets the text from the search field on the login tab'
         'Calls the connect_remote server method'
-        #'Returns the result'
-        results ={}
-        user = self.search_entry.get()
-        #self.chat_button_user = user
-        if user == '':
-            self.search_message.set('Please enter a valid name')
-        elif user == self.username:
-            self.search_message.set('Cannot add yourself as a contact')
+        'Calls the add_contact method'
+        response ={}
+        contact = self.search_entry.get()
+        if contact == '':
+            self.alert_message.set('Please enter a valid name')
+            self.root.after(3000,self.clean_label)
+        elif contact == self.username:
+            self.alert_message.set('Cannot add yourself as a contact')
+            self.root.after(3000,self.clean_label)
         else:
-            self.options['search']['USER'] = user            
-            results = (self.connect_remote_server(self.options['search']))
-            
-            if results['USER']!= '':
-                'Pop up window to notify the user'
-                if self.add_contact(results):
-                    self.search_message.set(user + ' added')
+            self.request['search']['USER'] = contact  
+            print "Searching for " + contact         
+            response = (self.connect_remote_server(self.request['search']))
+            if response['USER']!= '':
+                print contact + " found"
+                'Call the add_contact method with the received response'
+                if self.add_contact(response):
+                    'If add_contact returns true notify that the contact is added'
+                    self.alert_message.set(contact + ' added')
                     self.root.after(3000,self.clean_label)
-                    'The user is added to the local dictionary'
+                    print contact + " added"
 
+                    'The user is added to the local dictionary'
                     'Display new contact'
                     'Add new contact to contacts_dict'
-                    self.contacts_dict[results['USER']] = {}
+                    self.contacts_dict[response['USER']] = {}
                     self.display_contacts()
-
                 else:                
-                    self.search_message.set(user + ' already added')
+                    print contact + " already added"
+                    self.alert_message.set(contact + ' already added')
                     self.root.after(3000,self.clean_label)
             else:
-                self.search_message.set(user + ' not existing')
+                print contact + " does not exist"
+                self.alert_message.set(contact + ' does not exist')
                 self.root.after(3000,self.clean_label)
-
             self.search_entry.delete(0,END)
 
 #------------------------------------------------------------------------------
-#   It cleans the content of the search_label
+#   Cleans the content of the alert_label
 #------------------------------------------------------------------------------
 
     def clean_label(self):
-        self.search_message.set('')
+        self.alert_message.set('')
 
-#------------------------------------------------------------------------------
-#   It connects to server (add)
-#------------------------------------------------------------------------------
+#------------------------------------------------------------------------------------------------
+#   Connects to the remote chatserver for adding new contacts to the user's contact list
+#------------------------------------------------------------------------------------------------
     
-    def add_contact(self, results):
-        'Add a new contact to local database'
-        print "try insert"
-        self.options['add']['USER'] = self.username
-        self.options['add']['CONTACT'] = results['USER']
-        results = self.connect_remote_server(self.options['add'])
-        return results
-
+    def add_contact(self, response):
+        print "Adding " + response['USER'] + "..."
+        self.request['add']['USER'] = self.username
+        self.request['add']['CONTACT'] = response['USER']
+        response = self.connect_remote_server(self.request['add'])
+        return response
 
 #------------------------------------------------------------------------------
-#   It connects to server and get contacts list
+#   Connects to the remote chatserver and fetches user's contacts list
 #------------------------------------------------------------------------------
 
     def get_contacts(self):
-        'Get contact list from the chatserver db'
-        self.options['get']['USER'] = self.username
-        results = self.connect_remote_server(self.options['get'])
-        for each_contact in results:
+        print "Fetching contacts..."
+        self.request['get']['USER'] = self.username
+        response = self.connect_remote_server(self.request['get'])
+        for each_contact in response:
             self.contacts_dict[each_contact] = {}
         if len(self.contacts_dict) > 0:
             return True
@@ -390,7 +383,7 @@ class Client(object):
             return False
 
 #------------------------------------------------------------------------------
-#   It displays contacts as buttons to start chats
+#   Displays contacts as buttons that can be clicked to start chats
 #------------------------------------------------------------------------------
 
     def display_contacts(self):
@@ -403,40 +396,30 @@ class Client(object):
         for username in sorted(self.contacts_dict.keys()):
             btn = Button(self.contacts_listbox.interior, width=20, text= username,
                 command=lambda name=username:self.chat_button_clicked(name))
-            #btn.bind("<Button-1>",self.chat_button_clicked)
-            #btn.bind("<Return>",self.chat_button_clicked)
             btn.pack(padx=10, pady=5, side=TOP)
         
 
 #------------------------------------------------------------------------------
-#   It tries to connect to the contact and eventually opens the chat tab
+#    Connect to the contact(remote client) and opens the chat tab
 #------------------------------------------------------------------------------
  
     def chat_button_clicked(self,name):  
         'Open a new chat tab if the contact is online'
-
         'try to connect:'
         'if connection is possible, open chat tab'
         'else communicate user offline'
-
-        #self.chat_tab(self.chat_button_user)
-        
         if self.chat_connection(name):
-            #self.open_chat_tabs[name] = name
             self.chat_tab(name)
         else:
-            self.search_message.set(name+' is offline.')
-        
+            self.alert_message.set(name+' is offline.')
+            self.root.after(3000,self.clean_label)
         'set the focus on the new tab'#-----------------------------------------
-        #print 'open_chat_tabs + keys + name'
-        #print self.open_chat_tabs
-        #print self.open_chat_tabs.keys()
         print name
 
 
-#------------------------------------------------------------------------------
-#   It eventually connects to the server for starting a connection towards the contact
-#------------------------------------------------------------------------------
+#-----------------------------------------------------------------------------------------
+#   Connects to the chatserver for initiating a connection with the contact(remote client)
+#-----------------------------------------------------------------------------------------
 
     def chat_connection(self,name):
         'Check if user is in the user_connection list'
@@ -446,22 +429,20 @@ class Client(object):
         'Check if a connection for the user exists'
         ###### turn this into a function that the contacts message button calls
         ####then call the chat tab from this function
-        
         if name not in self.user_connection.keys():            
-            
             'Query the user to get connection details'
-            self.options['query']['USER'] = name
-            results = (self.connect_remote_server(self.options['query']))            
-            if results['CONNECTION'] != '':
-                host,port = results['CONNECTION'].split(':')
+            self.request['query']['USER'] = name
+            print "Querying the server for "+ name +"..."
+            response = (self.connect_remote_server(self.request['query']))            
+            if response['CONNECTION'] != '':
+                host,port = response['CONNECTION'].split(':')
                 'Connect to the remote client and get the socket information'
                 'Store name and socket details in global list'
                 print host
                 print self.client_port
                 connected_client = self.connector(host,self.client_port)
                 self.user_connection[name] = connected_client
-                return True
-                
+                return True  
             else:
                 print('User is not online')
                 return False
@@ -470,13 +451,12 @@ class Client(object):
     
 
 #------------------------------------------------------------------------------
-#   It starts the connection to the client
+#   Initiates the connection to the contact(remote client)
 #------------------------------------------------------------------------------
 
-    def connector(self, host,port):
+    def connector(self, host, port):
         'Method to initiate TCP connection to client'
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        #msg = '{} started a chat...'.format('random_name')
         msg = 'started a chat...'
         data = {'USER': self.username,'MSG':msg}        
         data = json.dumps(data).encode('utf-8')
@@ -486,7 +466,6 @@ class Client(object):
 
         'Start the connection and send initial message'
         sock.connect((host, port))
-
         sock.send(data)
         'Start thread to receive messages'
         'Can take out host but need to modify the method below'
@@ -495,7 +474,7 @@ class Client(object):
 
 
 #------------------------------------------------------------------------------
-#   It opens the chat tab
+#    Opens the chat tab for starting a conversation
 #------------------------------------------------------------------------------
     
     def chat_tab(self,name):
@@ -505,11 +484,8 @@ class Client(object):
         'uncomment if tab needs to be active when msg received'
         #self.tab_controller.select(tab_name) take out bottom too
         self.tab_name_user[tab_name] = name
-<<<<<<< HEAD
-        
         exit_frame = Frame(tab_name)
         exit_frame.pack()
-        #exit_frame.grid(row=0)
         
         info_msg = 'This is your conversation with '+name
         info = Label(exit_frame,text=info_msg)
@@ -521,7 +497,6 @@ class Client(object):
         conversation_frame = LabelFrame(tab_name, text=' Conversation ')
         conversation_frame.pack(fill='both',expand=1)
         #conversation_frame.grid(column=0, row=1, padx=8, pady=4)
-        
         display = Text(conversation_frame, wrap='word',bg="white", width=45, height=27, name='display', state='disabled') #witdh= number of characters that can be typed
         display.grid(column=0, row=0, sticky='nswe')
         self.user_tabs_list[name] = display
@@ -537,39 +512,37 @@ class Client(object):
         send = Button(conversation_frame, text="Send")
         send.grid(column=0, row=1, padx=10,ipady=5, sticky='se')
         #check here - take out
-        self.user_send_list[name] = submit_text #-----------------------------------
-        print 'chat tab: user_send_list' #--------------------------------
-        print self.user_send_list[name] #-------------------------------
+        self.user_send_list[name] = submit_text 
+        #print self.user_send_list[name] 
         send.bind("<ButtonRelease-1>",self.chat_send_button)
         send.bind("<Return>",self.chat_send_button)
-        return tab_name #---------------------------------------------------------
-
+        return tab_name 
 
 #------------------------------------------------------------------------------
-#   It starts the process for sending a message
+#    Starts the process for sending a message to the remote client
 #------------------------------------------------------------------------------
 
-    def chat_send_button(self,event):
+    def chat_send_button(self, event):
         'Gets the tab id, then calls the get_text method to update window'
         tab = self.tab_controller.select()
         print 'tab'
-        print str(tab)        
+        #print str(tab)        
         for key in self.tab_name_user.keys():
             print 'key'
             print str(key)           
-            if str(tab) == str(key): #----------------
+            if str(tab) == str(key): 
                 self.user = (self.tab_name_user.get(key))
                 print 'user'
                 print self.user
-            else: #------------------------------------
-                print 'bohhhhhhhhhhhhhhh' #----------------------
+            else: 
+                print "hi"
         self.get_text(self.user)
 
 #------------------------------------------------------------------------------
-# It adds the message to the outgoing messages queue  
+#   Adds the chat text message to the outgoing messages queue  
 #------------------------------------------------------------------------------    
 
-    def get_text(self,user):
+    def get_text(self, user):
         'Check if submit_text not empty and return data'
         message =''
         sent_data = {}
@@ -577,24 +550,22 @@ class Client(object):
             message = self.user_send_list[user].get()
             self.update_window(user,message,True)
             #self.update_window(self.username,message)
-            self.user_send_list[user].delete(0,END)
+            self.user_send_list[user].delete(0, END)
             sent_data['USER']= self.username
             sent_data['MSG'] = message
             print sent_data
             'Add message to the outgoing queue'
             self.sent_messages.put_nowait(sent_data)
-
-        
+ 
 #------------------------------------------------------------------------------
-# It closes the chat_tab with 'name'
+#   Closes the chat tab for the contact 'name'
 #------------------------------------------------------------------------------
 
-    def leave_conversation(self,name):
+    def leave_conversation(self, name):
         if messagebox.askokcancel("Close", "Are you sure?"):
             self.tab_controller.hide(name)
             self.tab_controller.select(self.contacts)
-
-                  
+         
 #------------------------------------------------------------------------------
 # not used
 #------------------------------------------------------------------------------
@@ -603,18 +574,16 @@ class Client(object):
         'Used by the send button to respond to mouse and enter key events'
         self.get_text()
 
-
-
-
 #------------------------------------------------------------------------------
-# It displays new text during the conversation   
+#   Displays new text messages during the conversation   
 #------------------------------------------------------------------------------
 
-    def update_window(self,contact,message, is_myself):
+    def update_window(self, contact, message, is_myself):
         'Add text to the display when enter or send is pressed'
         print 'inside update_window'
-        print self.user_tabs_list.keys()
-        print contact
+        #print self.user_tabs_list.keys()
+        #print contact
+        print "received message: "+ message
 
         self.user_tabs_list[contact].configure(state='normal') 
         if is_myself:
@@ -627,37 +596,31 @@ class Client(object):
 
         self.user_tabs_list[contact].configure(state='disabled')
         
-        
-
 #------------------------------------------------------------------------------
-#   It updates the chat window
+#   Updates the chat window every second
 #------------------------------------------------------------------------------              
 
     def gui_update(self):
-        'Method called every second to update the window'
         #Might need to split the two trys in two methods'
-        
         'Check the received_messages queue'        
         try:            
             received_message = self.received_messages.get_nowait()
             user = received_message['USER']
             msg = received_message['MSG']            
-            print 'user'
-            print user
-            print 'in try - gui_update'
+            print user + " started a chat"
+            print "updating chat window"
 
             'Check if tab exists for user or not'
             'Create new tab or update existing tab'
             self.user_tabs_list
             if user not in self.user_tabs_list.keys():                    
                 self.chat_tab(user)
-                print user
-                print msg
-                self.update_window(user,msg,False)
-                print self.user_tabs_list
-                print'open_chat_tabs'
-                print self.open_chat_tabs
-                print 'empty?'
+                #print user
+                #print msg
+                self.update_window(user, msg, False)
+                #print self.user_tabs_list
+                #print self.open_chat_tabs
+                #print 'empty?'
             else:
                 self.update_window(user,msg,False)
         except: #QueueEmpty: Need to find the exception to catch it here
@@ -666,44 +629,38 @@ class Client(object):
             pass
         try:            
             sent_message = self.sent_messages.get_nowait()
-            
             #call the send method now? or put this in the send method
             'Check to see if the user is in the user_connection list'            
             for key in self.user_connection.keys():           
-
-                #if sent_message['USER'] ==  str(key):
                 if self.user == str(key):
                     'Get the connection string'
-                    print sent_message
+                    print "sent message " + sent_message
                     connected_client = self.user_connection.get(key)                                
-                    print connected_client                    
+                    #print connected_client                    
                     'encode the message as json and send'
                     self.send_message(sent_message, connected_client)                                                  
         except:
             'Its ok if theres no data in the queue'
             'Will check again later'
             pass
-        
         'Schedule gui_update again in one second'        
         self.demoPanel.after(1000, self.gui_update)
 
 
 #------------------------------------------------------------------------------
-#   It connects to the server 
+#   Connects to the remote chatserver
 #------------------------------------------------------------------------------
 
-    def connect_remote_server(self,data):
+    def connect_remote_server(self, data):
         'Login Method'
-
-        HOST = '127.0.0.1'#'10.40.207.97'
+        #HOST = '10.40.212.51'
+        HOST = ''
         PORT = 5001             
-        #with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s: 
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)    
-        print data
+        print 'Request payload: {}'.format(data)
         data = json.dumps(data).encode('utf-8')        
         s.connect((HOST, PORT))
         s.send(data)
-
         while True:
             data = s.recv(1024)            
             if data:
@@ -715,37 +672,20 @@ class Client(object):
 
 
 #------------------------------------------------------------------------------
-#   It connects to the contact client
+#   Connects to the other clients
 #------------------------------------------------------------------------------
     #Use inheritance from the method above
     def connect_remote_client(self, host, port):
-        'Method to connect to other clients'
-        #data ={'USER': self.username, 'MSG':'Started a chat...'}
-                     
-        #with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s: 
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)    
-        print s
         data = json.dumps(data).encode('utf-8')        
         s.connect((host, port))            
-        #thread.start_new_thread(self.remote_client_send,(s))
-        #thread.start_new_thread(self.remote_client_recv,(s))
-
-        """while True:
-            data = s.recv(1024)            
-            if data:
-                data = json.loads(data.decode('utf-8'))
-                return data
-            else:
-                #check this line if other things are broken
-                return False"""
-
+        
 
 #------------------------------------------------------------------------------
-#   It sends data to the connected client
+#   Sends message to the connected client
 #------------------------------------------------------------------------------
 
     def remote_client_send(self,sock):
-        'Method to send data to the connected client'
         data ={'USER': self.username, 'MSG':'Started a chat...'}
         sock.send(data)
         print 'remote client recv thread started'
@@ -755,15 +695,13 @@ class Client(object):
                 sent_message = json.dumps(sent_message).encode('utf-8')         
                 sock.send(sent_message)
             except:
-                pass
-            
+                pass  
 
 #------------------------------------------------------------------------------
-#   It receives data to the connected client
+#   Receives data from the connected client
 #------------------------------------------------------------------------------
 
     def remote_client_recv(self,connected_client):
-        'Method to receive data from connected client'
         size = 1024
         print 'remote client recv thread started'
         while True:
@@ -774,9 +712,8 @@ class Client(object):
                 self.user_connection[user] = connected_client
                 self.received_messages.put_nowait(received_data)
 
-
 #------------------------------------------------------------------------------
-#   It initialises the local server
+#   Localserver for listening from other clients
 #------------------------------------------------------------------------------
 
     def local_server(self):
@@ -786,15 +723,13 @@ class Client(object):
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)   #Create TCP socket
         self.sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         self.sock.bind((self.host, self.port))  #Bind the socket (sock) to the host and port
-    
         'Listens for connections from clients and spawns a new thread'
         try:
-            print 'Server listening on {}:{}'.format(self.host,self.port)
+            print 'Client server listening on {}:{}'.format(self.host,self.port)
             self.sock.listen(10)
         except:
-            print 'Server not listening'
+            print 'Client server not listening'
             #Need to put a break here
-            
         while True:
             connected_client, client_address = self.sock.accept()
             #Need to log the IP address of the client (connection) at this stage
@@ -806,18 +741,13 @@ class Client(object):
             print '{}'.format(client_address)
             print '{}'.format(connected_client)
 
-
 #------------------------------------------------------------------------------
-#   It sends and receives data to/from the connected clients ----------------------------
+#   Sends and receives data to/from the connected clients 
 #------------------------------------------------------------------------------
 
-    def client_handler(self,connected_client, client_address):
-        'Send and receive data from each client that connects'        
-
+    def client_handler(self,connected_client, client_address):  
         size = 1024
-        result = ''
-        #ip,host = client_address        
-        
+        result = ''       
         while True:
             received_data = connected_client.recv(size)
             if not received_data:
@@ -829,43 +759,18 @@ class Client(object):
             print 'Client Handler thread started...'
         connected_client.close()
 
-
 #------------------------------------------------------------------------------
-# It sends data to connected clients  
+#   Sends json encoded chat message to connected clients  
 #------------------------------------------------------------------------------
 
-    def send_message(self,sent_message, connected_client):
-        'Method to send data to the connected clients'
-        'First encode as json and then send'
-        result= json.dumps(sent_message).encode('utf-8')        
+    def send_message(self, sent_message, connected_client):
+        result = json.dumps(sent_message).encode('utf-8')        
         try:            
-            #####Something here?
             connected_client.sendall(result)
-            print 'wednesday'
+            print 'Message sent'
         except:
-            print 'unable to send the message: '.format(message)
+            print 'Unable to send the message: '.format(message)
 
-'''
-#------------------------------------------------------------------------------
-#  not used 
-#------------------------------------------------------------------------------
-
-    def client_handler2(self,connected_client, client_address):
-        'Method to send data to the connected client'
-        sent_message ={'USER': self.username, 'MSG':'Started a chat...'}
-        sent_message = json.dumps(sent_message).encode('utf-8')
-        size = 1024
-        result = ''
-        ip,host = client_address   
-        connected_client.send(sent_message)
-        print 'Client Handler 2 thread started...'
-        while True:
-            try:            
-                sent_message = self.sent_messages.get_nowait()
-                sent_message = json.dumps(sent_message).encode('utf-8')         
-                connected_client.send(sent_message)                
-            except:
-                pass '''
 
 def create_db():
     'Create database to be used by client'
@@ -875,23 +780,22 @@ def create_db():
     con.commit()
     con.close()  
     
+
 def delete_db():
     'Delete client database'
     con = sqlite3.connect('client.db')
     cur = con.cursor()
     cur.execute(""" DROP TABLE """)
     con.commit()
-    con.close()        
-        
+    con.close()         
         
 
-def run():
-        
+def run():  
     chat = Client()
     'Start mainloop'
     chat.master.mainloop()
            
-                       
+                     
 
 if __name__ == "__main__":
     run()
