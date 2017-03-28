@@ -1,6 +1,29 @@
 \documentclass[finalReport.tex]{subfiles}
 \begin{document}
 \chapter{Introduction}
+This Group Project has developed a distributed client-server system. it has two clients and one server. One client which has developed using the Python Language is for web Application and other which has developed using Java in Android Studio for Android Application.
+The server has developed using Python socket programming.The server has the SQLite database.
+In this application when two clients want to communicate with each other whether it is web client or android client, both send the connection request to the related IP and Port to the server, on this, the server executes a socket and binds an IP address and port it.if the binding is successful then it starts to listen to that socket for incoming connection.Then server listens to that port accept it.After accepting the clients request the connection is established.Now the both clients connect to each other.The clients can send and receive the data through this connection while the connection is active.if the client's connection is closed then server accept it to closing the connection.
+ 
+     This Client-Server project allows the multiple clients to communicate each other at a time with local or remote server.
+The server has a specific IP address and Port so the the client could connect to it.The server could not connect to a client since client does not has any socket bound to specific IP address and port for listening incoming connections.so when the clients send the connection request it should  be accepted by the server because clients can not establish the connection themselves for communication.After this clients can send message to each other.
+
+
+     As we had mention in our initial report about the mandatory features list ,we are now able to-
+\begin{itemize}
+\item Send text based messages to one or more users at a time.
+\item Receive text based messages from one or more users at a time.
+\item Securing the communication between chat users
+\item search for the other users on the server.
+\item Registration for new user.
+\item User authentication(successfully Login and Logout from the existing connection.
+\item Run the Mobile chat application.
+\item Run the Desktop Chat application.
+\end{itemize}
+Apart from This Project we achieved the experience working together as a team.We learnt from each other's knowledge because each one has knowledge of different domain.
+Additionally we are now able to work on version control and collaboration software 
+we also now have the experience of doing different types of Testing strategy for example unit testing,regression and integration testing.
+
 
 
 
