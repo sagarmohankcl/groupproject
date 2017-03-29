@@ -23,4 +23,8 @@
     </string>
     <string name="title_activity_register">Register</string>
     <string name="title_activity_test">TestActivity</string>
+    <string name="title_activity_username">Username</string>
+
+
+
 </resources>

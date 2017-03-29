@@ -4,15 +4,27 @@ package com.example.tharuni.synomiliachat.ChatFunctionality;
  * Created by tharuni on 08/03/2017.
  */
 
-    /**
+import org.json.JSONObject;
+
+/**
      * Created by Technovibe on 17-04-2015.
      */
     public class ChatMessage {
         private long id;
         private boolean isMe;
-        private String message;
+        private JSONObject message;
         private Long userId;
         private String dateTime;
+
+
+//    public ChatMessage(long id,boolean isMe,JSONObject message,Long userId,String dateTime)
+//    {
+//        this.id=id;
+//        this.isMe=isMe;
+//        this.message=message;
+//        this.userId=userId;
+//        this.dateTime=dateTime;
+//    }
 
         public long getId() {
             return id;
@@ -30,11 +42,11 @@ package com.example.tharuni.synomiliachat.ChatFunctionality;
             this.isMe = isMe;
         }
 
-        public String getMessage() {
+        public JSONObject getMessage() {
             return message;
         }
 
-        public void setMessage(String message) {
+        public void setMessage(JSONObject message) {
             this.message = message;
         }
 

@@ -13,6 +13,8 @@ import android.widget.TextView;
 
 import com.example.tharuni.synomiliachat.R;
 
+import org.json.JSONObject;
+
 import java.util.List;
 
 /**
@@ -56,6 +58,41 @@ import java.util.List;
 
         @Override
         public View getView(final int position, View convertView, ViewGroup parent) {
+//            ViewHolder holder;
+//            ChatMessage chatMessage = getItem(position);
+//            LayoutInflater vi = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+//
+//            if (convertView == null) {
+//                convertView = vi.inflate(R.layout.list_item_chat_message, null);
+//                holder = createViewHolder(convertView);
+//                convertView.setTag(holder);
+//            } else {
+//                holder = (ViewHolder) convertView.getTag();
+//            }
+//
+//            boolean myMsg = chatMessage.getIsme();//Just a dummy check to simulate whether it me or other sender
+//            setAlignment(holder, myMsg);
+//            StringBuilder sb = new StringBuilder();
+//            String msg = " ";
+//            sb.append(msg);
+//
+//
+//           JSONObject jobj = new JSONObject();// chatMessage.getMessage();
+////            msg = jobj.toString();
+//           // msg = sb.append(jobj.toString();
+//            msg = sb.toString();
+//
+//
+//            try{
+//                jobj = chatMessage.getMessage();
+//                 sb.append(jobj.toString());
+//            }catch (Exception e){
+//                e.printStackTrace();
+//            }
+//            holder.txtMessage.setText(sb);
+//            holder.txtInfo.setText(chatMessage.getDate());
+//
+//            return convertView;
             ViewHolder holder;
             ChatMessage chatMessage = getItem(position);
             LayoutInflater vi = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -70,8 +107,12 @@ import java.util.List;
 
             boolean myMsg = chatMessage.getIsme() ;//Just a dummy check to simulate whether it me or other sender
             setAlignment(holder, myMsg);
-            holder.txtMessage.setText(chatMessage.getMessage());
-            holder.txtInfo.setText(chatMessage.getDate());
+            try {
+                StringBuilder sb = new StringBuilder();
+                sb.append(chatMessage.getMessage().toString());
+                holder.txtMessage.setText(chatMessage.getMessage().toString());
+                holder.txtInfo.setText(chatMessage.getDate());
+            }catch (Exception e){}
 
 
             return convertView;
