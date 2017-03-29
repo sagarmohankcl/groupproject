@@ -30,6 +30,8 @@ import java.util.Date;
 public class ChatActivity extends AppCompatActivity {
 
     private EditText editText;
+    private EditText searchText;
+    private Button searchButton;
     private ListView listView;
     private Button sendBtn;
     private ChatAdapter adapter;
@@ -40,6 +42,7 @@ public class ChatActivity extends AppCompatActivity {
     private ChatAdapter chatAdapter;
     private ChatMessage chatMessage;
     private JSONObject jsonObj;
+    private String getConnection;
     private String CHAT_SERVER_IP = "10.40.207.97";
 
 
@@ -50,13 +53,12 @@ public class ChatActivity extends AppCompatActivity {
      */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        try {
-       //     client = new Socket("localhost", 5001);
-        }catch (Exception e){}
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat);
         ChatServer cs = new ChatServer();
         editText = (EditText) findViewById(R.id.messageEdit);
+      //  searchText = (EditText) findViewById(R.id.searchEdit);
+      //  searchButton = (Button) findViewById(R.id.searchBtn);
         sendBtn = (Button) findViewById(R.id.chatSendButton);
         listView = (ListView) findViewById(R.id.messagesContainer);
         Button backBtn = (Button) findViewById(R.id.backBtn);
@@ -121,7 +123,8 @@ public class ChatActivity extends AppCompatActivity {
         msg.setMe(false);
         String s = "Hi";
         try {
-            jsonObj = new JSONObject(s);
+            jsonObj = new JSONObject();
+            jsonObj.put("MSG",s);
         }catch (Exception e){}
         msg.setMessage(jsonObj);
         msg.setDate(DateFormat.getDateTimeInstance().format(new Date()));
@@ -197,6 +200,23 @@ public class ChatActivity extends AppCompatActivity {
                     }
                 }
             });
+//
+//            searchButton.setOnClickListener((new View.OnClickListener() {
+//                @Override
+//                public void onClick(View v)
+//                {
+//                    final Sender messageSender = new Sender(); // Initialize chat sender AsyncTask.
+//                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+//                        messageSender.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+//                    } else {
+//                       // Socket socket = new Socket();
+//                        messageSender.execute();
+//                        try {
+//                            Socket s = new Socket(getConnection, 8080);
+//                        }catch (Exception e){}
+//                    }
+//                }
+//            }));
             Receiver receiver = new Receiver(); // Initialize chat receiver AsyncTask.
             receiver.execute();
         }
@@ -207,25 +227,16 @@ public class ChatActivity extends AppCompatActivity {
      * message if a message is availble.
      */
     private class Receiver extends AsyncTask<Void, Void, Void> {
-
-        private String message = "";
-        JSONObject obj = new JSONObject();
-        StringBuilder sb = new StringBuilder();
+        private String message;
 
         @Override
         protected Void doInBackground(Void... params) {
             while (true) {
                 try {
+
                     if (bufferedReader.ready()) {
                         message = bufferedReader.readLine();
-                        sb.append(message);
-                        System.out.println(bufferedReader.readLine());
-                      try {
-                           obj = new JSONObject(sb.toString());
-
-                        }catch(Exception e)
-                       {}
-                       // publishProgress(null);
+                        publishProgress(null);
                     }
                 } catch (UnknownHostException e) {
                     e.printStackTrace();
@@ -242,6 +253,10 @@ public class ChatActivity extends AppCompatActivity {
 
         @Override
         protected void onProgressUpdate(Void... values) {
+            JSONObject obj = new JSONObject();
+            try {
+                obj.put("MSG", message);
+            }catch (Exception e){}
             ChatMessage chatMessage = new ChatMessage();
             chatMessage.setMe(false);
             chatMessage.setMessage(obj);
@@ -256,23 +271,15 @@ public class ChatActivity extends AppCompatActivity {
      */
     private class Sender extends AsyncTask<Void, Void, Void> {
         JSONObject obj = new JSONObject();
-
-        //obj.put("id", userID);
-      //  obj.put("type", methoden);
-     //   obj.put("msg", msget);
-
-// etc.
-
-     //   final String json = obj.toString(); // <-- JSON string
-    //    private String JSONmessage = "{'USER':'taz','MSG':";
+   //     JSONObject jsonObject = new JSONObject();
         private String message;
 
         @Override
         protected Void doInBackground(Void... params) {
             message = editText.getText().toString();
-     //       JSONmessage = JSONmessage + message + "}";
             try {
-      //          jsonObj = new JSONObject(JSONmessage);
+//                jsonObj.put("OPTION","SEARCH USER");
+//                jsonObj.put("USER",searchText.getText().toString());
                 obj.put("USER","taz");
                 obj.put("MSG",message);
                // obj.toString();
@@ -290,6 +297,9 @@ public class ChatActivity extends AppCompatActivity {
             chatMessage.setMessage(obj);
             chatMessage.setDate(DateFormat.getDateTimeInstance().format(new Date()));
             displayMessage(chatMessage);
+//            try {
+//                getConnection = jsonObj.getJSONArray("CONNECTION").toString();
+//            }catch (Exception e){}
         }
     }
 
