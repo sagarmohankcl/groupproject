@@ -1,8 +1,41 @@
 \select@language {english}
-\contentsline {chapter}{\numberline {1}Introduction}{2}
-\contentsline {chapter}{\numberline {2}Review}{3}
-\contentsline {chapter}{\numberline {3}Requirements and Design}{4}
-\contentsline {chapter}{\numberline {4}Implementation}{5}
-\contentsline {chapter}{\numberline {5}Teamwork}{6}
-\contentsline {chapter}{\numberline {6}Evaluation}{7}
-\contentsline {chapter}{\numberline {7}Peer Assessment}{8}
+\contentsline {chapter}{\numberline {1}Introduction}{4}
+\contentsline {chapter}{\numberline {2}Review}{5}
+\contentsline {section}{\numberline {2.1}WhatsApp}{5}
+\contentsline {section}{\numberline {2.2}Google Talk and Skype}{6}
+\contentsline {chapter}{\numberline {3}Requirements and Design}{7}
+\contentsline {section}{\numberline {3.1}Functional Requirements of the Server}{7}
+\contentsline {section}{\numberline {3.2}Functional Requirements of the Client}{8}
+\contentsline {section}{\numberline {3.3}Use Cases}{9}
+\contentsline {section}{\numberline {3.4}Mapping Functional Requirements to Use Cases}{10}
+\contentsline {section}{\numberline {3.5}General notes}{10}
+\contentsline {subsection}{\numberline {3.5.1}Socket Programming}{10}
+\contentsline {subsection}{\numberline {3.5.2}Database Design}{10}
+\contentsline {chapter}{\numberline {4}Implementation}{12}
+\contentsline {section}{\numberline {4.1}Server}{12}
+\contentsline {section}{\numberline {4.2}Web Application Client}{14}
+\contentsline {section}{\numberline {4.3}Android Client}{18}
+\contentsline {section}{\numberline {4.4}Testing}{20}
+\contentsline {subsubsection}{Unit Testing}{20}
+\contentsline {paragraph}{Login}{20}
+\contentsline {paragraph}{Register}{20}
+\contentsline {paragraph}{Start a chat}{21}
+\contentsline {paragraph}{Chat conversation}{21}
+\contentsline {paragraph}{Search and add a contact}{21}
+\contentsline {paragraph}{Logout}{21}
+\contentsline {paragraph}{UI}{21}
+\contentsline {subsubsection}{Functional Testing}{22}
+\contentsline {chapter}{\numberline {5}Teamwork}{23}
+\contentsline {chapter}{\numberline {6}Evaluation}{24}
+\contentsline {section}{\numberline {6.1}Aspects of the final project}{24}
+\contentsline {subsection}{\numberline {6.1.1}Server}{25}
+\contentsline {subsection}{\numberline {6.1.2}Python Client}{25}
+\contentsline {subsection}{\numberline {6.1.3}Android Client}{25}
+\contentsline {subsection}{\numberline {6.1.4}The final system}{26}
+\contentsline {section}{\numberline {6.2}Problems and changes made}{26}
+\contentsline {section}{\numberline {6.3}Project improvements and future works}{27}
+\contentsline {chapter}{\numberline {7}Peer Assessment}{28}
+\contentsline {chapter}{Appendices}{29}
+\contentsline {chapter}{\numberline {A}Use Cases Description}{30}
+\contentsline {chapter}{\numberline {B}Test Results}{41}
+\contentsline {chapter}{\numberline {C}Test Unit Code}{42}

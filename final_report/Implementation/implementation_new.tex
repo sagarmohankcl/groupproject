@@ -1,0 +1,91 @@
+\documentclass[finalReport.tex]{subfiles}
+\begin{document}
+\chapter{Implementation}
+
+\subsection{Testing}
+For testing the software, both unit testing and functional testing was performed. Unit testing involved testing both the backend features and the UI features. It helped in catching couple of bugs quite early such as displaying appropriate messages on the application's user interface every time a use case fails. It also helped in identifying a few design glitches. For example, the 'logout' feature initially only navigated the display to the 'login' page without actually disconnecting the client(closing the socket) from the server. This caused the online user to open the chat window for a client which was not logged in without displaying an appropriate message about the status of the offline client on the user interface. This bug was identified by unit testing and was fixed in the later versions. Additionally, unit testing was performed incrementally for subsequent versions of the software. The functional testing was performed at later stages to test the connection and communication between multiple clients. Rigorous testing of the software helped in improving the quality and robustness of the software. 
+
+\subsubsection{Unit Testing} 
+The unit testing involved testing the features of the client and the server for a number of use cases. Both positive and negative test cases were run for evaluating the successful use cases and the unsuccessful ones respectively. The unit testing was performed manually as well as using automated testing scripts for testing the backend and UI for both the web and android client and the server backend. The python module \lstinline'unittest' was used for generating the automated test suite. The test cases were categorized according to the different use cases mentioned in the previous sections. The results of unit testing and functional testing are included in the appendix. The lists of test cases run for each use case are mentioned below.
+
+\paragraph{Login} 
+
+\begin{itemize}
+\item{Log in with a registered username and password}
+\item{On successfully login, view the personal contacts displayed on the  personalized main page}
+\item{Log in with an empty string as username}
+\item{Log in with an empty string as password}
+\item{Log in with an empty string as username and password}
+\item{Log in with an unregistered username}
+\item{Log in with a registered name and an incorrect password}
+\end{itemize}
+
+\paragraph{Register}
+
+\begin{itemize}
+\item{Register a new user with a valid username and password}
+\item{On successful registration, view the standard main page without any contacts displayed}
+\item{Register with an empty string as username}
+\item{Register with an empty string as password}
+\item{Register with an empty string as username and password}
+\item{Register with a valid username but different password}
+\item{Register with an already registered user}
+\item{Closing registration window without entering username and password}
+\end{itemize}
+
+\paragraph{Start a chat}
+\begin{itemize}
+\item{Click on a contact button of an online contact to open a chat window}
+\item{Start a chat with an online contact}
+\item{Click on a contact button of an offline contact}
+\end{itemize}
+
+\paragraph{Chat conversation}
+\begin{itemize}
+\item{Write a text message to a chat window}
+\item{Read a text message from a chat window}
+\end{itemize}
+
+\paragraph{Search and add a contact}
+
+\begin{itemize}
+\item{Search for a registered user and add it to the contact list}
+\item{View the added contact in the list of contacts on the personalized main page}
+\item{Search for an empty string as username}
+\item{Search for a non registered username}
+\item{Search for a existing user}
+\end{itemize}
+
+\paragraph{Logout}
+\begin{itemize}
+\item{Log out from the chat application using logout button}
+\item{Log out from the chat application by clicking on the close window button}
+\end{itemize}
+
+\paragraph{UI} 
+
+\begin{itemize}
+\item{Navigation between Login activity and Register activity}
+\item{Navigation between Login activity and contacts list display}
+\item{Navigation between contact list display and Chat tab}
+\item{Logout button activity}
+\item{Close button activity}
+\item{Text messages display on chat tab}
+\item{Notification for username and password mismatch}
+\item{Notification for adding a non existing username as contact}
+\item{Notification for adding yourself as contact}
+\item{Notification for adding an empty string as contact}
+\item{Notification when the contact is offline}
+\end{itemize}
+
+
+\subsubsection{Functional Testing}
+After performing unit testing for a satisfactory number of versions, functional test was performed for a relatively more stable version(with as few bugs as possible). This helped in testing the overall functionality of the chat application. Few of the functional test cases are mentioned below.
+
+\begin{itemize}
+\item{Initiate a two-way chat conversation with each client hosted on a different IP address and server hosted on a third IP address}
+\item{Initiate multiple chats among three clients each hosted on a different IP address and server hosted on a fourth IP address}
+\end{itemize}
+
+
+\end{document}

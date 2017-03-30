@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.16 (MiKTeX 2.9 64-bit) (preloaded format=pdflatex 2015.9.9)  23 MAR 2017 23:00
+This is pdfTeX, Version 3.14159265-2.6-1.40.16 (MiKTeX 2.9 64-bit) (preloaded format=pdflatex 2015.9.9)  30 MAR 2017 16:56
 entering extended mode
 **finalReport.tex
 (finalReport.tex
@@ -705,50 +705,90 @@ Package: appendix 2009/09/02 v1.2b extra appendix facilities
 \c@@ppsavesec=\count118
 \c@@ppsaveapp=\count119
 )
-(finalReport.aux)
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 30.
-LaTeX Font Info:    ... okay on input line 30.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 30.
-LaTeX Font Info:    ... okay on input line 30.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 30.
-LaTeX Font Info:    ... okay on input line 30.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 30.
-LaTeX Font Info:    ... okay on input line 30.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 30.
-LaTeX Font Info:    ... okay on input line 30.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 30.
-LaTeX Font Info:    ... okay on input line 30.
-LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 30.
-LaTeX Font Info:    Try loading font information for TS1+cmr on input line 30.
+("C:\Program Files\MiKTeX 2.9\tex\latex\enumitem\enumitem.sty"
+Package: enumitem 2011/09/28 v3.5.2 Customized lists
+\labelindent=\skip69
+\enit@outerparindent=\dimen138
+\enit@toks=\toks27
+\enit@inbox=\box40
+\enitdp@description=\count120
+)
+("C:\Program Files\MiKTeX 2.9\tex\latex\listings\listings.sty"
+\lst@mode=\count121
+\lst@gtempboxa=\box41
+\lst@token=\toks28
+\lst@length=\count122
+\lst@currlwidth=\dimen139
+\lst@column=\count123
+\lst@pos=\count124
+\lst@lostspace=\dimen140
+\lst@width=\dimen141
+\lst@newlines=\count125
+\lst@lineno=\count126
+\lst@maxwidth=\dimen142
+
+("C:\Program Files\MiKTeX 2.9\tex\latex\listings\lstmisc.sty"
+File: lstmisc.sty 2015/06/04 1.6 (Carsten Heinz)
+\c@lstnumber=\count127
+\lst@skipnumbers=\count128
+\lst@framebox=\box42
+)
+("C:\Program Files\MiKTeX 2.9\tex\latex\listings\listings.cfg"
+File: listings.cfg 2015/06/04 1.6 listings configuration
+))
+Package: listings 2015/06/04 1.6 (Carsten Heinz)
+
+(finalReport.aux
+
+LaTeX Warning: Label `app:test' multiply defined.
+
+)
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 114.
+LaTeX Font Info:    ... okay on input line 114.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 114.
+LaTeX Font Info:    ... okay on input line 114.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 114.
+LaTeX Font Info:    ... okay on input line 114.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 114.
+LaTeX Font Info:    ... okay on input line 114.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 114.
+LaTeX Font Info:    ... okay on input line 114.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 114.
+LaTeX Font Info:    ... okay on input line 114.
+LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 114.
+LaTeX Font Info:    Try loading font information for TS1+cmr on input line 114.
+
  ("C:\Program Files\MiKTeX 2.9\tex\latex\base\ts1cmr.fd"
 File: ts1cmr.fd 2014/09/29 v2.5h Standard LaTeX font definitions
 )
-LaTeX Font Info:    ... okay on input line 30.
+LaTeX Font Info:    ... okay on input line 114.
 
 ("C:\Program Files\MiKTeX 2.9\tex\context\base\supp-pdf.mkii"
 [Loading MPS to PDF converter (version 2006.09.02).]
-\scratchcounter=\count120
-\scratchdimen=\dimen138
-\scratchbox=\box40
-\nofMPsegments=\count121
-\nofMParguments=\count122
-\everyMPshowfont=\toks27
-\MPscratchCnt=\count123
-\MPscratchDim=\dimen139
-\MPnumerator=\count124
-\makeMPintoPDFobject=\count125
-\everyMPtoPDFconversion=\toks28
-) <chat-2-icon.png, id=1, 256.96pt x 256.96pt>
+\scratchcounter=\count129
+\scratchdimen=\dimen143
+\scratchbox=\box43
+\nofMPsegments=\count130
+\nofMParguments=\count131
+\everyMPshowfont=\toks29
+\MPscratchCnt=\count132
+\MPscratchDim=\dimen144
+\MPnumerator=\count133
+\makeMPintoPDFobject=\count134
+\everyMPtoPDFconversion=\toks30
+)
+\c@lstlisting=\count135
+ <chat-2-icon.png, id=1, 256.96pt x 256.96pt>
 File: chat-2-icon.png Graphic file (type png)
  <use chat-2-icon.png>
-Package pdftex.def Info: chat-2-icon.png used on input line 46.
+Package pdftex.def Info: chat-2-icon.png used on input line 130.
 (pdftex.def)             Requested size: 137.9979pt x 137.99959pt.
-LaTeX Font Info:    Try loading font information for U+msa on input line 53.
+LaTeX Font Info:    Try loading font information for U+msa on input line 137.
 
 ("C:\Program Files\MiKTeX 2.9\tex\latex\amsfonts\umsa.fd"
 File: umsa.fd 2013/01/14 v3.01 AMS symbols A
 )
-LaTeX Font Info:    Try loading font information for U+msb on input line 53.
+LaTeX Font Info:    Try loading font information for U+msb on input line 137.
 
 ("C:\Program Files\MiKTeX 2.9\tex\latex\amsfonts\umsb.fd"
 File: umsb.fd 2013/01/14 v3.01 AMS symbols B
@@ -756,55 +796,340 @@ File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 
 {C:/Users/Francesca/AppData/Local/MiKTeX/2.9/pdftex/config/pdftex.map} <./chat-
 2-icon.png>]
-[1] (finalReport.toc)
-\tf@toc=\write3
- (Introduction/introduction.tex [1
+(finalReport.toc [2
 
-]
+])
+\tf@toc=\write3
+ (intro.tex [3]
 Chapter 1.
-) (Review/review.tex [2
+) (Review/review.tex [4
 
 ]
 Chapter 2.
-) (RandD/requir_design.tex [3
+[5
 
-]
+]) (RandD/requir_design.tex [6]
 Chapter 3.
-) (Implementation/implementation.tex [4
+[7
+
+] [8] <RandD/Plot/UMLusecases.png, id=36, 408.02437pt x 317.68687pt>
+File: RandD/Plot/UMLusecases.png Graphic file (type png)
+
+<use RandD/Plot/UMLusecases.png>
+Package pdftex.def Info: RandD/Plot/UMLusecases.png used on input line 133.
+(pdftex.def)             Requested size: 306.01753pt x 238.26456pt.
+ [9 <./RandD/Plot/UMLusecases.png>] [10
+
 
 ]
+<db.png, id=44, 538.01pt x 82.3075pt>
+File: db.png Graphic file (type png)
+ <use db.png>
+Package pdftex.def Info: db.png used on input line 247.
+(pdftex.def)             Requested size: 403.5065pt x 61.73045pt.
+
+Overfull \hbox (58.5065pt too wide) in paragraph at lines 247--248
+ [][] 
+ []
+
+) (Implementation/implementation.tex [11 <./db.png>]
 Chapter 4.
-) (Teamwork/teamwork.tex [5
 
-]
+LaTeX Warning: Reference `App:test' on page 12 undefined on input line 7.
+
+<Implementation/Plot/Server_methods.jpg, id=49, 583.17876pt x 613.29124pt>
+File: Implementation/Plot/Server_methods.jpg Graphic file (type jpg)
+
+<use Implementation/Plot/Server_methods.jpg>
+Package pdftex.def Info: Implementation/Plot/Server_methods.jpg used on input l
+ine 14.
+(pdftex.def)             Requested size: 204.11562pt x 214.65514pt.
+ [12
+
+ <./Implementation/Plot/Server_methods.jpg>] [13]
+Overfull \hbox (4.22145pt too wide) in paragraph at lines 47--48
+\OT1/cmr/m/n/10 team im-ple-mented these re-quire-ments with the [][][][] and [
+][][][]
+ []
+
+
+LaTeX Warning: Reference `Fig: Wamethods' on page 14 undefined on input line 57
+.
+
+<Implementation/Plot/WAmethods.jpg, id=58, 803.0pt x 788.9475pt>
+File: Implementation/Plot/WAmethods.jpg Graphic file (type jpg)
+
+<use Implementation/Plot/WAmethods.jpg>
+Package pdftex.def Info: Implementation/Plot/WAmethods.jpg used on input line 6
+1.
+(pdftex.def)             Requested size: 281.05421pt x 276.13576pt.
+
+
+LaTeX Warning: `h' float specifier changed to `ht'.
+
+[14] [15 <./Implementation/Plot/WAmethods.jpg>] [16] [17]
+<Implementation/Plot/android_classes.png, id=75, 541.52313pt x 374.39874pt>
+File: Implementation/Plot/android_classes.png Graphic file (type png)
+
+<use Implementation/Plot/android_classes.png>
+Package pdftex.def Info: Implementation/Plot/android_classes.png used on input 
+line 148.
+(pdftex.def)             Requested size: 324.91638pt x 224.64098pt.
+
+Overfull \hbox (13.66592pt too wide) in paragraph at lines 164--166
+\OT1/cmr/m/n/10 The [][][] sub-class cre-ates a socket con-nec-tion and ini-tia
+lises [][][]
+ []
+
+[18 <./Implementation/Plot/android_classes.png>]
+Overfull \hbox (17.55551pt too wide) in paragraph at lines 169--170
+[]\OT1/cmr/m/n/10 Once a user has logged in, they will tran-si-tion to the next
+ ac-tiv-ity, [][][].
+ []
+
+
+Overfull \hbox (4.98033pt too wide) in paragraph at lines 173--175
+\OT1/cmr/m/n/10 database. This is im-ple-mented us-ing the [][][]. [][][]
+ []
+
+[19] [20] [21]) (Teamwork/teamwork.tex [22]
 Chapter 5.
-) (Evaluation/evaluation.tex [6
+) (Evaluation/evaluation.tex [23
 
 ]
 Chapter 6.
-) (PeerAss/assessment.tex [7
+
+LaTeX Warning: Reference `chap:implementation' on page 24 undefined on input li
+ne 19.
+
+[24
+
+] [25] [26]) (PeerAss/assessment.tex [27]
+Chapter 7.
+) [28
+
+] [29
+
+
+] (appendix_uc.tex
+Appendix A.
+
+Overfull \hbox (31.81398pt too wide) in alignment at lines 5--34
+ [] [] 
+ []
+
+
+Underfull \vbox (badness 10000) detected at line 34
+ []
+
+
+Overfull \hbox (31.81398pt too wide) in alignment at lines 34--35
+ [] [] 
+ []
+
+[30
+
+] [31]
+Overfull \hbox (31.81398pt too wide) in alignment at lines 40--67
+ [] [] 
+ []
+
+
+Underfull \vbox (badness 10000) detected at line 67
+ []
+
+
+Overfull \hbox (31.81398pt too wide) in alignment at lines 67--68
+ [] [] 
+ []
+
+[32
 
 ]
-Chapter 7.
-) [8
+Overfull \hbox (31.81398pt too wide) in alignment at lines 73--103
+ [] [] 
+ []
 
-] (finalReport.aux) ) 
+
+Underfull \vbox (badness 10000) detected at line 103
+ []
+
+
+Overfull \hbox (31.81398pt too wide) in alignment at lines 103--104
+ [] [] 
+ []
+
+[33
+
+]
+Overfull \hbox (31.81398pt too wide) in alignment at lines 109--139
+ [] [] 
+ []
+
+
+Underfull \vbox (badness 10000) detected at line 139
+ []
+
+
+Overfull \hbox (31.81398pt too wide) in alignment at lines 139--140
+ [] [] 
+ []
+
+[34
+
+]
+Overfull \hbox (31.81398pt too wide) in alignment at lines 145--171
+ [] [] 
+ []
+
+
+Underfull \vbox (badness 10000) detected at line 171
+ []
+
+
+Overfull \hbox (31.81398pt too wide) in alignment at lines 171--172
+ [] [] 
+ []
+
+[35
+
+]
+Overfull \hbox (31.81398pt too wide) in alignment at lines 182--217
+ [] [] 
+ []
+
+
+Underfull \vbox (badness 10000) detected at line 217
+ []
+
+
+Overfull \hbox (31.81398pt too wide) in alignment at lines 217--218
+ [] [] 
+ []
+
+[36
+
+]
+Underfull \hbox (badness 2073) in paragraph at lines 243--243
+[]\OT1/cmr/m/n/10 Client1 asks the Server the in-for-ma-tion about
+ []
+
+
+Overfull \hbox (31.81398pt too wide) in alignment at lines 224--259
+ [] [] 
+ []
+
+
+Underfull \vbox (badness 10000) detected at line 259
+ []
+
+
+Overfull \hbox (31.81398pt too wide) in alignment at lines 259--260
+ [] [] 
+ []
+
+[37
+
+]
+Overfull \hbox (31.81398pt too wide) in alignment at lines 267--300
+ [] [] 
+ []
+
+
+Underfull \vbox (badness 10000) detected at line 300
+ []
+
+
+Overfull \hbox (31.81398pt too wide) in alignment at lines 300--301
+ [] [] 
+ []
+
+[38
+
+]
+Overfull \hbox (31.81398pt too wide) in alignment at lines 307--333
+ [] [] 
+ []
+
+
+Underfull \vbox (badness 10000) detected at line 333
+ []
+
+
+Overfull \hbox (31.81398pt too wide) in alignment at lines 333--334
+ [] [] 
+ []
+
+[39
+
+]
+Overfull \hbox (31.81398pt too wide) in alignment at lines 341--369
+ [] [] 
+ []
+
+
+Underfull \vbox (badness 10000) detected at line 369
+ []
+
+
+Overfull \hbox (31.81398pt too wide) in alignment at lines 369--370
+ [] [] 
+ []
+
+) (appendix_test.tex [40
+
+]
+Appendix B.
+<test2.png, id=150, 563.60562pt x 531.48563pt>
+File: test2.png Graphic file (type png)
+ <use test2.png>
+Package pdftex.def Info: test2.png used on input line 6.
+(pdftex.def)             Requested size: 309.98404pt x 292.318pt.
+)
+(appendix_code.tex [41
+
+ <./test2.png>]
+Appendix C.
+(unit_test_chatserver.py [42
+
+]
+Overfull \hbox (111.79584pt too wide) in paragraph at lines 36--38
+[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][
+][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]
+[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][
+][][][][][][][][][][][] 
+ []
+
+)) [43] (finalReport.aux)
+
+LaTeX Warning: There were undefined references.
+
+
+LaTeX Warning: There were multiply-defined labels.
+
+ ) 
 Here is how much of TeX's memory you used:
- 6044 strings out of 493673
- 80106 string characters out of 3143949
- 175549 words of memory out of 3000000
- 9237 multiletter control sequences out of 15000+200000
- 10757 words of font info for 40 fonts, out of 3000000 for 9000
+ 8291 strings out of 493673
+ 111304 string characters out of 3143949
+ 234274 words of memory out of 3000000
+ 11441 multiletter control sequences out of 15000+200000
+ 13780 words of font info for 53 fonts, out of 3000000 for 9000
  1025 hyphenation exceptions out of 8191
- 42i,5n,35p,327b,253s stack positions out of 5000i,500n,10000p,200000b,50000s
-<C:/Program Files/MiKTeX 2.9/fonts/type1/public/amsfonts/c
-m/cmbx10.pfb><C:/Program Files/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmbx12
-.pfb><C:/Program Files/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmr10.pfb><C:/
-Program Files/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmr12.pfb><C:/Program F
-iles/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmti12.pfb>
-Output written on finalReport.pdf (10 pages, 79251 bytes).
+ 42i,10n,40p,1387b,1645s stack positions out of 5000i,500n,10000p,200000b,50000s
+ <C:\Users\Francesca\AppData\Local\MiKTeX\2.9\fonts\pk\ljfour\jknappen\ec\dpi
+600\tcrm1000.pk><C:/Program Files/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmb
+x10.pfb><C:/Program Files/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmbx12.pfb>
+<C:/Program Files/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmr10.pfb><C:/Progr
+am Files/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmr12.pfb><C:/Program Files/
+MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmr6.pfb><C:/Program Files/MiKTeX 2.9
+/fonts/type1/public/amsfonts/cm/cmr7.pfb><C:/Program Files/MiKTeX 2.9/fonts/typ
+e1/public/amsfonts/cm/cmr8.pfb><C:/Program Files/MiKTeX 2.9/fonts/type1/public/
+amsfonts/cm/cmti10.pfb><C:/Program Files/MiKTeX 2.9/fonts/type1/public/amsfonts
+/cm/cmti12.pfb><C:/Program Files/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmtt
+10.pfb><C:/Program Files/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmtt8.pfb>
+Output written on finalReport.pdf (43 pages, 474630 bytes).
 PDF statistics:
- 58 PDF objects out of 1000 (max. 8388607)
+ 202 PDF objects out of 1000 (max. 8388607)
  0 named destinations out of 1000 (max. 500000)
- 6 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 36 words of extra memory for PDF output out of 10000 (max. 10000000)
 

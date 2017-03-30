@@ -1,10 +1,8 @@
 \documentclass[finalReport.tex]{subfiles}
 \begin{document}
+\chapter{Implementation}
 
-\chapter{Implementation}\label{ch:impl}
-The main and more relevant aspects of the implementation of the server, the web application client and the android client are respectively presented in the Sections \ref{sec:impl:server}, \ref{sec:impl:web-app} and \ref{sec:impl:android}. 
-
-Section \ref{sec:impl:testing} describes the testing plan that allowed the team to come up with the comprehensive test suite, whose results are available in Appendix \ref{App:test}.
+The main and more relevant aspects of the implementation of the server, the web application client and the android client are respectively presented in the Sections \ref{sec:impl:server}, \ref{sec:impl:web-app} and \ref{sec:impl:android}.
 
 \section{Server}\label{sec:impl:server}
 This Section describes the general implementation of the server. Figure \ref{Fig: server-methods} shows an overview on the interconnections between the implemented methods.  
@@ -138,131 +136,11 @@ self.demoPanel.after(1000, self.gui_update)
 
 The python \lstinline'after()' function was used to allow the \lstinline'gui_update()' method to call itself after a period of time. In this case, it is every 1000 milliseconds. This essentially means every second the \lstinline'gui_update()' method calls itself, checks both incoming and outgoing queues for messages and updates the tabs in the window if any new messages has arrived. It may not have been possible to implement a seemingly real time application in \lstinline'tkinter' without the after function.
 
+-----------------------------------------------------------
+(talk some more about tkinter???)
+
 
 \section{Android Client}\label{sec:impl:android}
-
-This Section describes the general implementation of the Android client. Figure \ref{Fig: android-methods} shows an overview on the interconnections between the implemented methods.  
-
-\begin{figure}[h] 
-\centering
-\includegraphics[scale=0.6]{Implementation/Plot/android_classes.png}
-\caption{Diagram of the connections between the Android client methods}\label{Fig: android-methods}
-\end{figure}
-
-
-The different classes for Android were implemented using \textit{Android Studio}. The implementation of the functionalities began by building the main activities for each aspect of the platform. An activity in Android is needed for each page of the Android model that needs to be implemented. The following activities are the ones that were developed for the Android client:
-\begin{itemize}
-\item LoginActivity
-\item RegisterActivity
-\item MainActivity
-\item UserListActivity
-\item ChatActivity
-\end{itemize}
-
-The activities are responsible for the functionalities for each page. The build of the UI .xml files is generated for each activity, which develops the interface; the .java files associated with the activities contain the classes and methods needed for each activity. The \lstinline'onCreate()' methods are implemented in all the activities, this method initialises the UI components and creates the functionalities for them, such as buttons for transitioning to other screens.
-
-\lstinline'LoginActivity' is the first activity that is launched when the application is run. The \lstinline'attemptLogin()' method inside \lstinline'LoginActivity' validates the user login details and then calls the \lstinline'LoginOperator' subclass inside \lstinline'LoginActivity'. The \lstinline'LoginOperator' subclass creates a socket connection and initialises \lstinline'printwrite' and \lstinline'bufferedreader'. 
-The \lstinline'printwrite' variable is used to write details to the server and the \lstinline'bufferedreader' variable is used to read the input from the user, therefore the \lstinline'LoginOperator' reads the login credentials and sends these details to the server, which checks if these credentials exist in the database. If they exist, the user is allowed to transition to the next activity, \lstinline'MainActivity'.
-
-However, if a user does not already have their credentials stored on the database, they will have to register. This is done using \lstinline'RegisterActivity'. The \lstinline'attemptLogin()' method within \lstinline'RegisterActivity' validates the password and username entered by the user in the client (the user must enter their password twice and it must be greater than two characters in length). This method calls the \lstinline'RegisterOperator' subclass which opens a stream of communication with the server. The \lstinline'doInBackground()' method within this subclass which connects to the socket on the particular user's chat IP address and port number. Next, \lstinline'printwrite' and \lstinline'bufferedreader' are initialised, much like in \lstinline'LoginActivity', therefore the \lstinline'RegisterOperator' reads the login credentials and sends these details to the server, which adds the new login credentials to the database.
-
-Once a user has logged in, they will transition to the next activity, \lstinline'MainActivity'. \lstinline'MainActivity' contains three fragments, \lstinline'ChatFragment', \lstinline'UserFragment' and \lstinline'FriendFragment'. Each of these fragments have a class; \lstinline'ChatFragContent', \lstinline'FriendFragContent' and \lstinline'UserFragContent' as seen in the above class diagram. 
-
-The initial conceptualisation of the implementation for the Android client was to have these fragments, and each fragment contains a list of the users for that associated fragment. For example, the \lstinline'FriendFragment' would contain a list of only the user's friends. However, due to implementation issues and timing constraints these fragments could not be implemented for the final system, as detailed in the evaluation part of the report.
-
-The final Android client allows users to see a global list of all the users in the database. This is implemented using the \lstinline'UserListActivity'. \lstinline'UserListActivity' contains a method, \lstinline'copyDatabase()', which copies all the users on the database and then displays them in the UI. The \lstinline'ListUsersAdapter' contains a constructor for the users, \lstinline'ListUsersAdapter'. This class then contains the get methods which retrieve all the users in the database. Once users click on a user from the list, they are taken to the next and final activity, \lstinline'ChatActivity'.
-The \lstinline'ChatActivity' class contains the methods and subclasses needed to send and receive messages from another client. The \lstinline'ChatOperator' method subclass opens a stream of communications to and from the server. The \lstinline'Send' and \lstinline'Receive' subclasses within \lstinline'ChatActivity' then allow a user to send and receive by connecting to the socket on the particular user's (the person with whom the user is chatting) IP address and port number.
-
-The other classes seen in the Figure \ref{Fig: android-methods} are needed for the Android application to perform other tasks. The \lstinline'MakingConnection' class connects to the socket, taking in the IP address and port number from the parameters initialised. The \lstinline'DatabaseHelper' class returns the list of user details that are stored in the database on the server. The \lstinline'getAllRows()' method within \lstinline'DatabaseHelper' class retrieves all the rows of the database.
-
-
-
-
-\section{Testing}\label{sec:impl:testing}
-For testing the software, both unit testing and functional testing was performed. Unit testing involved testing both the backend features and the UI features. It helped in catching couple of bugs quite early such as displaying appropriate messages on the application's user interface every time a use case fails. It also helped in identifying a few design glitches. For example, the 'logout' feature initially only navigated the display to the 'login' page without actually disconnecting the client(closing the socket) from the server. This caused the online user to open the chat window for a client which was not logged in without displaying an appropriate message about the status of the offline client on the user interface. This bug was identified by unit testing and was fixed in the later versions. Additionally, unit testing was performed incrementally for subsequent versions of the software. The functional testing was performed at later stages to test the connection and communication between multiple clients. Rigorous testing of the software helped in improving the quality and robustness of the software. 
-
-\subsubsection{Unit Testing} 
-The unit testing involved testing the features of the client and the server for a number of use cases. Both positive and negative test cases were run for evaluating the successful use cases and the unsuccessful ones respectively. The unit testing was performed manually as well as using automated testing scripts for testing the backend and UI for both the web and android client and the server backend. The python module \lstinline'unittest' was used for generating the automated test suite. The test cases were categorized according to the different use cases mentioned in the previous sections. The results of unit testing and functional testing are included in the appendix. The lists of test cases run for each use case are mentioned below.
-
-\paragraph{Login} 
-
-\begin{itemize}
-\item{Log in with a registered username and password}
-\item{On successfully login, view the personal contacts displayed on the  personalized main page}
-\item{Log in with an empty string as username}
-\item{Log in with an empty string as password}
-\item{Log in with an empty string as username and password}
-\item{Log in with an unregistered username}
-\item{Log in with a registered name and an incorrect password}
-\end{itemize}
-
-\paragraph{Register}
-
-\begin{itemize}
-\item{Register a new user with a valid username and password}
-\item{On successful registration, view the standard main page without any contacts displayed}
-\item{Register with an empty string as username}
-\item{Register with an empty string as password}
-\item{Register with an empty string as username and password}
-\item{Register with a valid username but different password}
-\item{Register with an already registered user}
-\item{Closing registration window without entering username and password}
-\end{itemize}
-
-\paragraph{Start a chat}
-\begin{itemize}
-\item{Click on a contact button of an online contact to open a chat window}
-\item{Start a chat with an online contact}
-\item{Click on a contact button of an offline contact}
-\end{itemize}
-
-\paragraph{Chat conversation}
-\begin{itemize}
-\item{Write a text message to a chat window}
-\item{Read a text message from a chat window}
-\end{itemize}
-
-\paragraph{Search and add a contact}
-
-\begin{itemize}
-\item{Search for a registered user and add it to the contact list}
-\item{View the added contact in the list of contacts on the personalized main page}
-\item{Search for an empty string as username}
-\item{Search for a non registered username}
-\item{Search for a existing user}
-\end{itemize}
-
-\paragraph{Logout}
-\begin{itemize}
-\item{Log out from the chat application using logout button}
-\item{Log out from the chat application by clicking on the close window button}
-\end{itemize}
-
-\paragraph{UI} 
-
-\begin{itemize}
-\item{Navigation between Login activity and Register activity}
-\item{Navigation between Login activity and contacts list display}
-\item{Navigation between contact list display and Chat tab}
-\item{Logout button activity}
-\item{Close button activity}
-\item{Text messages display on chat tab}
-\item{Notification for username and password mismatch}
-\item{Notification for adding a non existing username as contact}
-\item{Notification for adding yourself as contact}
-\item{Notification for adding an empty string as contact}
-\item{Notification when the contact is offline}
-\end{itemize}
-
-
-\subsubsection{Functional Testing}
-After performing unit testing for a satisfactory number of versions, functional test was performed for a relatively more stable version(with as few bugs as possible). This helped in testing the overall functionality of the chat application. Few of the functional test cases are mentioned below.
-
-\begin{itemize}
-\item{Initiate a two-way chat conversation with each client hosted on a different IP address and server hosted on a third IP address}
-\item{Initiate multiple chats among three clients each hosted on a different IP address and server hosted on a fourth IP address}
-\end{itemize}
-
 
 
 

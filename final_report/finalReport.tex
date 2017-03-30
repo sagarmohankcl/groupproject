@@ -1,9 +1,5 @@
 \documentclass[10pt,a4paper,oneside]{report}
 
-%\documentclass[10pt,a4paper,oneside]{book}
-%\setlength{\oddsidemargin}{15mm} %aggiungo spazio per la rilegatura
-%\setlength{\evensidemargin}{15mm}
-
 \usepackage[utf8]{inputenc}
 \usepackage[english]{babel}
 \usepackage{amsmath}
@@ -20,9 +16,97 @@
 \usepackage{nameref}
 \usepackage{textcomp}
 \usepackage[toc,page]{appendix}
+\usepackage{enumitem}
+\usepackage{listings}
+%\usepackage{minted}
+%\usepackage{fvextra}
 
-%\newcommand{\V}{\mathcal{V}}
-%\newcommand{\green}[1]{\textcolor{Green}{\textbf{#1}}}
+
+\renewcommand{\lstlistingname}{Code}
+
+\lstdefinelanguage{python}{
+	morekeywords=[1]{self,for, if, else, elif, in, der, return, while, try, except},
+	extendedchars=true, 
+    breaklines=true,
+    breakatwhitespace=true,
+    basicstyle=\ttfamily,
+    columns=fullflexible,
+	tabsize=4,
+    keywordstyle=[1]\color{orange},%\color[rgb]{0.4,0.8,0.2}\bfseries,
+    morekeywords=[2]{self},
+    keywordstyle=[2]\color{blue},
+    alsoletter={-,?,.},
+    morekeywords=[3]{},
+    keywordstyle=[3]\color[rgb]{0.6,0,0.8},
+    comment=[l]{\#},
+    commentstyle=\color[rgb]{0.75,0.75,0.75},
+    string=[d]{"},
+    stringstyle=\color{orange},
+    otherkeywords={1, 2, 3, 4, 5, 6, 7, 8, 9, 0},
+    morekeywords=[4]{1, 2, 3, 4, 5, 6, 7, 8, 9, 0, true, false},
+    keywordstyle=[4]{\color{purple}},
+}
+
+\lstset{
+	language={python}
+}
+
+
+
+
+
+
+
+
+
+
+%
+%
+%% Default fixed font does not support bold face
+%\DeclareFixedFont{\ttb}{T1}{txtt}{bx}{n}{12} % for bold
+%\DeclareFixedFont{\ttm}{T1}{txtt}{m}{n}{12}  % for normal
+%
+%% Custom colors
+%\usepackage{color}
+%\definecolor{deepblue}{rgb}{0,0,0.5}
+%\definecolor{deepred}{rgb}{0.6,0,0}
+%\definecolor{deepgreen}{rgb}{0,0.5,0}
+%
+%\usepackage{listings}
+%
+%% Python style for highlighting
+%\newcommand\pythonstyle{\lstset{
+%language=Python,
+%basicstyle=\ttm,
+%otherkeywords={self},             % Add keywords here
+%keywordstyle=\ttb\color{deepblue},
+%emph={MyClass,__init__},          % Custom highlighting
+%emphstyle=\ttb\color{deepred},    % Custom highlighting style
+%stringstyle=\color{deepgreen},
+%frame=tb,                         % Any extra options here
+%showstringspaces=false            % 
+%}}
+%
+%
+%% Python environment
+%\lstnewenvironment{python}[1][]
+%{
+%\tiny
+%\pythonstyle
+%\lstset{#1}
+%}
+%{}
+%
+%% Python for external files
+%\newcommand\pythonexternal[2][]{{
+%\pythonstyle
+%\lstinputlisting[#1]{#2}}}
+%
+%% Python for inline
+%\newcommand\pythoninline[1]{{\tiny \pythonstyle\lstinline!#1!}}
+
+\newcommand\pythoninline[1]{\mintinline{python}{#1}}
+
 
 \author{Synomilia}
 
@@ -64,16 +148,9 @@ March 2017\\[2cm]
 %\thispagestyle{empty}\null\pagebreak
 %\frontmatter
 
-\begin{abstract}
-abstract tba
-\end{abstract}
 \tableofcontents
 
-% NOTE:
-% to execute just one section, run this file commenting all the others subfiles	
-
-%\subfile{acronyms.tex}
-\subfile{Introduction/introduction.tex}
+\subfile{intro.tex}
 \subfile{Review/review.tex}
 \subfile{RandD/requir_design.tex}
 \subfile{Implementation/implementation.tex}
@@ -82,9 +159,11 @@ abstract tba
 \subfile{PeerAss/assessment.tex}
 
 
-%\begin{appendices}
-%\subfile{Appendix1.tex}
-%\end{appendices}
+\begin{appendices}
+\subfile{appendix_uc.tex}
+\subfile{appendix_test.tex}
+\subfile{appendix_code.tex}
+\end{appendices}
 
 %\subfile{Bibliography/biblio.tex}
 
