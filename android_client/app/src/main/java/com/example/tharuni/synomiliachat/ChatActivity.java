@@ -13,10 +13,7 @@ import android.widget.ListView;
 import android.content.Intent;
 import com.example.tharuni.synomiliachat.ChatFunctionality.ChatAdapter;
 import com.example.tharuni.synomiliachat.ChatFunctionality.ChatMessage;
-import com.example.tharuni.synomiliachat.Connection.ChatServer;
-
 import org.json.JSONObject;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -26,6 +23,7 @@ import java.net.UnknownHostException;
 import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import static com.example.tharuni.synomiliachat.LoginActivity.globalUser;
 
 public class ChatActivity extends AppCompatActivity {
 
@@ -39,11 +37,9 @@ public class ChatActivity extends AppCompatActivity {
     private Socket client;
     private PrintWriter printWriter;
     private BufferedReader bufferedReader;
-    private ChatAdapter chatAdapter;
     private ChatMessage chatMessage;
     private JSONObject jsonObj;
-    private String getConnection;
-    private String CHAT_SERVER_IP = "10.40.207.97";
+    public static String CHAT_SERVER_IP = "10.40.207.97";
 
 
     /**
@@ -53,12 +49,13 @@ public class ChatActivity extends AppCompatActivity {
      */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+       // Handler h = new Handler(ClientServerThread());
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat);
-        ChatServer cs = new ChatServer();
         editText = (EditText) findViewById(R.id.messageEdit);
-      //  searchText = (EditText) findViewById(R.id.searchEdit);
-      //  searchButton = (Button) findViewById(R.id.searchBtn);
+        //  searchText = (EditText) findViewById(R.id.searchEdit);
+        //  searchButton = (Button) findViewById(R.id.searchBtn);
         sendBtn = (Button) findViewById(R.id.chatSendButton);
         listView = (ListView) findViewById(R.id.messagesContainer);
         Button backBtn = (Button) findViewById(R.id.backBtn);
@@ -104,8 +101,7 @@ public class ChatActivity extends AppCompatActivity {
     }
 
 
-    public void initControls()
-    {
+    public void initControls() {
         loadMessages();
         ChatOperator chatOperator = new ChatOperator();
         chatOperator.execute();
@@ -121,11 +117,12 @@ public class ChatActivity extends AppCompatActivity {
         ChatMessage msg = new ChatMessage();
         msg.setId(1);
         msg.setMe(false);
-        String s = "Hi";
+        String s = "WELCOME TO THE CHAT: "+globalUser;
         try {
             jsonObj = new JSONObject();
-            jsonObj.put("MSG",s);
-        }catch (Exception e){}
+            jsonObj.put("MESSAGE", s);
+        } catch (Exception e) {
+        }
         msg.setMessage(jsonObj);
         msg.setDate(DateFormat.getDateTimeInstance().format(new Date()));
         chatHistory.add(msg);
@@ -166,7 +163,7 @@ public class ChatActivity extends AppCompatActivity {
         @Override
         protected Void doInBackground(Void... arg0) {
             try {
-                client = new Socket("10.40.212.51", 5001); // Creating the server socket.
+                client = new Socket("10.40.216.156", 8080); // Creating the server socket.
 
                 if (client != null) {
                     printWriter = new PrintWriter(client.getOutputStream(), true);
@@ -256,7 +253,8 @@ public class ChatActivity extends AppCompatActivity {
             JSONObject obj = new JSONObject();
             try {
                 obj.put("MSG", message);
-            }catch (Exception e){}
+            } catch (Exception e) {
+            }
             ChatMessage chatMessage = new ChatMessage();
             chatMessage.setMe(false);
             chatMessage.setMessage(obj);
@@ -271,19 +269,20 @@ public class ChatActivity extends AppCompatActivity {
      */
     private class Sender extends AsyncTask<Void, Void, Void> {
         JSONObject obj = new JSONObject();
-   //     JSONObject jsonObject = new JSONObject();
         private String message;
 
         @Override
         protected Void doInBackground(Void... params) {
             message = editText.getText().toString();
+            EditText et = (EditText) findViewById(R.id.username);
             try {
 //                jsonObj.put("OPTION","SEARCH USER");
 //                jsonObj.put("USER",searchText.getText().toString());
-                obj.put("USER","taz");
-                obj.put("MSG",message);
-               // obj.toString();
-            }catch(Exception e){}
+                obj.put("USER", globalUser);
+                obj.put("Message: ", message);
+                // obj.toString();
+            } catch (Exception e) {
+            }
             printWriter.write(obj.toString() + "\n");
             printWriter.flush();
             return null;
@@ -297,6 +296,7 @@ public class ChatActivity extends AppCompatActivity {
             chatMessage.setMessage(obj);
             chatMessage.setDate(DateFormat.getDateTimeInstance().format(new Date()));
             displayMessage(chatMessage);
+
 //            try {
 //                getConnection = jsonObj.getJSONArray("CONNECTION").toString();
 //            }catch (Exception e){}
@@ -305,5 +305,6 @@ public class ChatActivity extends AppCompatActivity {
 
 
 }
+
 
 

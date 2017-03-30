@@ -28,11 +28,11 @@ import android.view.View.OnClickListener;
 import android.view.inputmethod.EditorInfo;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
@@ -45,6 +45,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static android.Manifest.permission.READ_CONTACTS;
+//import static com.example.tharuni.synomiliachat.UserListActivity.mUserList;
 
 /**
  * A login screen that offers login via email/password.
@@ -77,10 +78,17 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     private PrintWriter printWriter;
     private BufferedReader bufferedReader;
     private String CHAT_SERVER_IP = "10.40.207.97";
+    // ChatServer cs = new ChatServer();
+    private Credentials c;
+    public static String globalUser;
+
+    JSONObject jsonObject;// JSONObject();
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
+        //  ChatServer cs = new ChatServer();
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
@@ -102,7 +110,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         btn_register.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //attemptLogin();
+
                Intent intent = new Intent(LoginActivity.this, RegisterActivity.class);
                 startActivity(intent);
             }
@@ -174,10 +182,10 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
      * If there are form errors (invalid email, missing fields, etc.), the
      * errors are presented and no actual login attempt is made.
      */
-    private void attemptLogin() {
-        if (mAuthTask != null) {
-            return;
-        }
+    private boolean attemptLogin() {
+//        if (mAuthTask != null) {
+//            return;
+//        }
 
         // Reset errors.
         mUsernameView.setError(null);
@@ -215,10 +223,11 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         } else {
             // Show a progress spinner, and kick off a background task to
             // perform the user login attempt.
-            showProgress(true);
+          //  showProgress(true);
             mAuthTask = new LoginOperator(username, password);
-            mAuthTask.execute((Void) null);
+            mAuthTask.execute();
         }
+        return true;
     }
 
     private boolean isEmailValid(String email) {
@@ -228,7 +237,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
     private boolean isPasswordValid(String password) {
         //TODO: Replace this with your own logic
-        return password.length() > 4;
+        return password.length() > 2;
     }
 
     /**
@@ -322,11 +331,10 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     }
 
 
-public void initControls()
-{
-  //  LoginOperator loginOperator = new LoginOperator();
-  //  loginOperator.execute();
-}
+    public void initControls() {
+        //  LoginOperator loginOperator = new LoginOperator();
+        //  loginOperator.execute();
+    }
 
     /**
      * This AsyncTask create the connection with the server and initialize the
@@ -370,11 +378,14 @@ public void initControls()
         protected void onPostExecute(Void result) {
 
             final Sender messageSender = new Sender(); // Initialize chat sender AsyncTask.
+            Receiver receiver = new Receiver(); // Initialize chat receiver AsyncTask.
+
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
                 messageSender.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+                receiver.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+
             } else {
                 messageSender.execute();
-                Receiver receiver = new Receiver(); // Initialize chat receiver AsyncTask.
                 receiver.execute();
             }
         }
@@ -411,10 +422,28 @@ public void initControls()
 
         @Override
         protected void onProgressUpdate(Void... values) {
+            jsonObject = new JSONObject();
             JSONObject obj = new JSONObject();
+            System.out.println(jsonObject);
             try {
                 obj.put("MSG", message);
-            }catch (Exception e){}
+                if(message.contains("true"))
+                {
+                    System.out.print("THIS IS HAPPENING too");
+                    Context context = getApplicationContext();
+                    CharSequence text = "Registered as new User!\n" +"Please Login.";
+                    int duration = Toast.LENGTH_LONG;
+                    Toast toast = Toast.makeText(context, text, duration);
+                    toast.show();
+                    Intent intent = new Intent(LoginActivity.this, UserListActivity.class);
+                    startActivity(intent);
+                }
+                {
+                    mPasswordView.setError(getString(R.string.error_incorrect_password));
+                    mPasswordView.requestFocus();
+                }
+            } catch (Exception e) {
+            }
 
         }
 
@@ -423,59 +452,126 @@ public void initControls()
     /**
      * This AsyncTask sends the chat message through the output stream.
      */
-    private class Sender extends AsyncTask<Void, Void, Boolean> {
+    //   private class Sender extends AsyncTask<Void, Void, Boolean> {
+//        JSONObject obj = new JSONObject();
+//
+//        private String username;
+//        private String password;
+//        private String test = "marc";
+//
+//        @Override
+//        protected Boolean doInBackground(Void... arg0) {
+//            username = mUsernameView.getText().toString();
+//            password = mPasswordView.getText().toString();
+//            globalUser = username;
+//            try {
+//                obj.put("OPTION", "LOGIN");
+//                obj.put("USER", username);
+//                obj.put("PASSWORD", password);
+//
+//                // obj.toString();
+//            } catch (Exception e) {
+//            }
+//            System.out.print(obj);
+//            printWriter.write(obj.toString() + "\n");
+//            printWriter.flush();
+////            System.out.println(jsonObject.toString());
+//            //printWriter.flush();
+//            return true;
+//
+//        }
+//
+//        @Override
+//        protected void onPostExecute(Boolean success) {
+//
+//            mUsernameView.setText(""); // Clear the chat box
+//            mPasswordView.setText(""); // Clear the chat box
+//            showProgress(false);
+//
+//            if (success) {
+//                Context context = getApplicationContext();
+////                try {
+////                    jsonObject.put("OPTION","GET_CONTACTS");
+////                    jsonObject.put("USER",username);
+////                    if(jsonObject !=null) {
+////                        // int Status = jsonObject.getInt("id");
+////                        String username = jsonObject.getString("USERNAME");
+////                        String password = jsonObject.getString("PASSWORD");
+////                        String connection = jsonObject.getString("CONNECTION");
+////                        String date = jsonObject.getString("DATE");
+////                        c = new Credentials(9, username, password, connection, date);
+////
+////                    }
+////                } catch (JSONException e) {
+////                    // Handle error
+//
+//
+//            CharSequence text = "Successfully logged in!\n" + "Welcome:\n " + username + "coool:   ";//+jsonObject;
+//            int duration = Toast.LENGTH_LONG;
+//            Toast toast = Toast.makeText(context, text, duration);
+//            toast.show();
+//            Intent intent = new Intent(LoginActivity.this, UserListActivity.class);
+//            startActivity(intent);
+//        }
+//
+//            else
+//            {
+//                mPasswordView.setError(getString(R.string.error_incorrect_password));
+//                mPasswordView.requestFocus();
+//            }
+//
+//
+//        }
+//
+//        @Override
+//       protected void onCancelled() {
+//            mAuthTask = null;
+//            showProgress(false);
+//        }
+    private class Sender extends AsyncTask<Void, Void, Void> {
         JSONObject obj = new JSONObject();
 
         private String username;
         private String password;
 
         @Override
-        protected Boolean doInBackground(Void... arg0) {
-            username = mUsernameView.getText().toString();
-            password = mPasswordView.getText().toString();
-            try {
-                obj.put("OPTION", "LOGIN");
-                obj.put("USER", username);
-                obj.put("PASSWORD", password);
-                // obj.toString();
-            }catch(Exception e){}
-            printWriter.write(obj.toString() + "\n");
-            printWriter.flush();
-            return true;
+        protected Void doInBackground(Void... arg0) {
+            while(true) {
+                username = mUsernameView.getText().toString();
+                password = mPasswordView.getText().toString();
+                try {
+                    obj.put("OPTION", "LOGIN");
+                    obj.put("USER", username);
+                    obj.put("PASSWORD", password);
+                    // obj.toString();
+                } catch (Exception e) {
+                }
+                printWriter.write(obj.toString() + "\n");
+                printWriter.flush();
+            }
         }
 
         @Override
-        protected void onPostExecute(Boolean success) {
+        protected void onProgressUpdate(Void... values) {
 
             mUsernameView.setText(""); // Clear the chat box
             mPasswordView.setText(""); // Clear the chat box
-            showProgress(false);
+//            if (success) {
+//                Context context = getApplicationContext();
+//                CharSequence text = "Logged as new User!\n" + " welkies." + username;
+//                int duration = Toast.LENGTH_LONG;
+//                Toast toast = Toast.makeText(context, text, duration);
+//                toast.show();
+//                Intent intent = new Intent(LoginActivity.this, UserListActivity.class);
+//                startActivity(intent);
+//            } else {
+//                mPasswordView.setError(getString(R.string.error_incorrect_password));
+//                mPasswordView.requestFocus();
+//            }
 
-            if(success)
-            {
-                Context context = getApplicationContext();
-                 CharSequence text = "Successfully logged in!\n" + "Welcome: "+username;
-                int duration = Toast.LENGTH_SHORT;
-                Toast toast = Toast.makeText(context, text, duration);
-               toast.show();
-                Intent intent = new Intent(LoginActivity.this, ChatActivity.class);
-                startActivity(intent);
-            }
-            else
-            {
-                mPasswordView.setError(getString(R.string.error_incorrect_password));
-                mPasswordView.requestFocus();
-            }
-
-
-        }
-
-        @Override
-       protected void onCancelled() {
-            mAuthTask = null;
-            showProgress(false);
         }
     }
+}
 
 
 
@@ -537,5 +633,5 @@ public void initControls()
 //            showProgress(false);
 //        }
 //    }
-}
+
 

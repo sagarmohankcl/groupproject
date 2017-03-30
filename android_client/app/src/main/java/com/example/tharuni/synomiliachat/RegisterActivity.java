@@ -5,18 +5,13 @@ import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.support.annotation.NonNull;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.app.LoaderManager.LoaderCallbacks;
-
 import android.content.CursorLoader;
 import android.content.Loader;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
-
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.ContactsContract;
@@ -29,56 +24,28 @@ import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import com.example.tharuni.synomiliachat.ChatFunctionality.ChatAdapter;
-import com.example.tharuni.synomiliachat.ChatFunctionality.ChatMessage;
-
 import org.json.JSONObject;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.net.UnknownHostException;
-import java.text.DateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
-import java.util.regex.Pattern;
-
-import static android.Manifest.permission.READ_CONTACTS;
-
 /**
  * A login screen that offers login via email/password.
  */
 public class RegisterActivity extends AppCompatActivity implements LoaderCallbacks<Cursor> {
 
-
-
-    /**
-     * Id to identity READ_CONTACTS permission request.
-     */
-    private static final int REQUEST_READ_CONTACTS = 0;
-
-    /**
-     * A dummy authentication store containing known user names and passwords.
-     * TODO: remove after connecting to a real authentication system.
-     */
-    private static final String[] DUMMY_CREDENTIALS = new String[]{
-            "foo@example.com:hello", "bar@example.com:world"
-    };
-    /**
-     * Keep track of the login task to ensure we can cancel it if requested.
-     */
     private RegisterOperator mAuthTask = null;
 
     // UI references.
     private AutoCompleteTextView mUsernameView;
     private EditText mPasswordView;
+    private EditText mPasswordView2;
     private View mProgressView;
     private View mLoginFormView;
     private Socket client;
@@ -86,101 +53,47 @@ public class RegisterActivity extends AppCompatActivity implements LoaderCallbac
     private BufferedReader bufferedReader;
     Button mRegisterButton;
     private String CHAT_SERVER_IP = "10.40.207.97";
+    JSONObject obj = new JSONObject();
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
         // Set up the login form.
         mUsernameView = (AutoCompleteTextView) findViewById(R.id.username);
-        populateAutoComplete();
-
         mPasswordView = (EditText) findViewById(R.id.password);
+        mPasswordView2 = (EditText) findViewById(R.id.password2);
         mPasswordView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView textView, int id, KeyEvent keyEvent) {
                 if (id == R.id.login || id == EditorInfo.IME_NULL) {
-                    attemptLogin();
-                    return true;
+                        return true;
+
                 }
                 return false;
             }
         });
-//        initControls();
-
-         mRegisterButton = (Button) findViewById(R.id.btn_registered);
+        mRegisterButton = (Button) findViewById(R.id.btn_registered);
         mRegisterButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
                 attemptLogin();
-              //  Intent intent = new Intent(RegisterActivity.this, ChatActivity.class);
-              //  startActivity(intent);
+                //    Intent intent = new Intent(RegisterActivity.this, LoginActivity.class);
+                //  startActivity(intent);
             }
+
         });
+    //    RegisterOperator ro = new RegisterOperator(mUsernameView.toString(),mPasswordView.toString(),mPasswordView2.toString());
+      //  ro.execute();
 
         mLoginFormView = findViewById(R.id.login_form);
         mProgressView = findViewById(R.id.login_progress);
     }
 
-//    public boolean check()
-//    {
-//
-//        return mPasswordView.getText().toString() != "" && mPasswordView.getText().toString().equals(mPasswordView.getText().toString()) && mUsernameView.getText().toString() != "";
-//
-//    }
 
-//    public void initControls()
-//    {
-//        if(check()==true) {
-//            RegisterOperator registerOperator = new RegisterOperator();
-//            registerOperator.execute();
-//        }
-//
-//
-//    }
 
-    private void populateAutoComplete() {
-        if (!mayRequestContacts()) {
-            return;
-        }
-
-        getLoaderManager().initLoader(0, null, this);
-    }
-
-    private boolean mayRequestContacts() {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-            return true;
-        }
-        if (checkSelfPermission(READ_CONTACTS) == PackageManager.PERMISSION_GRANTED) {
-            return true;
-        }
-        if (shouldShowRequestPermissionRationale(READ_CONTACTS)) {
-            Snackbar.make(mUsernameView, R.string.permission_rationale, Snackbar.LENGTH_INDEFINITE)
-                    .setAction(android.R.string.ok, new View.OnClickListener() {
-                        @Override
-                        @TargetApi(Build.VERSION_CODES.M)
-                        public void onClick(View v) {
-                            requestPermissions(new String[]{READ_CONTACTS}, REQUEST_READ_CONTACTS);
-                        }
-                    });
-        } else {
-            requestPermissions(new String[]{READ_CONTACTS}, REQUEST_READ_CONTACTS);
-        }
-        return false;
-    }
-
-    /**
-     * Callback received when a permissions request has been completed.
-     */
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
-                                           @NonNull int[] grantResults) {
-        if (requestCode == REQUEST_READ_CONTACTS) {
-            if (grantResults.length == 1 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                populateAutoComplete();
-            }
-        }
-    }
 
 
     /**
@@ -188,10 +101,10 @@ public class RegisterActivity extends AppCompatActivity implements LoaderCallbac
      * If there are form errors (invalid email, missing fields, etc.), the
      * errors are presented and no actual login attempt is made.
      */
-    private void attemptLogin() {
-        if (mAuthTask != null) {
-            return;
-        }
+    private boolean attemptLogin() {
+      //  if (mAuthTask == null) {
+          //  return true;
+        //}
 
         // Reset errors.
         mUsernameView.setError(null);
@@ -200,6 +113,8 @@ public class RegisterActivity extends AppCompatActivity implements LoaderCallbac
         // Store values at the time of the login attempt.
         String email = mUsernameView.getText().toString();
         String password = mPasswordView.getText().toString();
+        String password2 = mPasswordView2.getText().toString();
+
 
         boolean cancel = false;
         View focusView = null;
@@ -209,6 +124,10 @@ public class RegisterActivity extends AppCompatActivity implements LoaderCallbac
             mPasswordView.setError(getString(R.string.error_invalid_password));
             focusView = mPasswordView;
             cancel = true;
+        }
+        if (!password.equals(password2)) {
+            mPasswordView.setError("These do not match");
+
         }
 
         // Check for a valid email address.
@@ -229,10 +148,11 @@ public class RegisterActivity extends AppCompatActivity implements LoaderCallbac
         } else {
             // Show a progress spinner, and kick off a background task to
             // perform the user login attempt.
-            showProgress(true);
-            mAuthTask = new RegisterOperator(email, password);
-            mAuthTask.execute((Void) null);
+            //showProgress(true);
+           mAuthTask = new RegisterOperator(email, password, password2);
+            mAuthTask.execute();
         }
+        return true;
     }
 
     private boolean isEmailValid(String email) {
@@ -344,11 +264,14 @@ public class RegisterActivity extends AppCompatActivity implements LoaderCallbac
     private class RegisterOperator extends AsyncTask<Void, Void, Void> {
         private final String mUsername;
         private final String mPassword;
+        private final String mPassword2;
 
-        RegisterOperator(String email, String password) {
+        RegisterOperator(String email, String password, String password2) {
             mUsername = email;
             mPassword = password;
+            mPassword2 = password2;
         }
+
         @Override
         protected Void doInBackground(Void... arg0) {
             try {
@@ -376,35 +299,19 @@ public class RegisterActivity extends AppCompatActivity implements LoaderCallbac
          */
         @Override
         protected void onPostExecute(Void result) {
-//            mRegisterButton.setOnClickListener(new OnClickListener() {
-//                @Override
-//                public void onClick(View view) {
-//                    final Sender messageSender = new Sender(); // Initialize chat sender AsyncTask.
-//                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-//                        messageSender.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-//                    } else {
-//                       // attemptLogin();
-//                        messageSender.execute();
-//                        Intent intent = new Intent(RegisterActivity.this, MainActivity.class);
-//                        startActivity(intent);
-//                    }
-//                }
-//
-//            });
 
+            final Sender messageSender = new Sender(); // Initialize chat sender AsyncTask.
+            Receiver receiver = new Receiver();
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+                messageSender.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+                //Receiver receiver = new Receiver(); // Initialize chat receiver AsyncTask.
+                receiver.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 
-//            sendBtn.setOnClickListener(new View.OnClickListener() {
-//                public void onClick(View v) {
-                    final Sender messageSender = new Sender(); // Initialize chat sender AsyncTask.
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-                        messageSender.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-                    } else {
-                        messageSender.execute();
-                    }
-//                }
-//            });
-            Receiver receiver = new Receiver(); // Initialize chat receiver AsyncTask.
-            receiver.execute();
+            } else {
+                messageSender.execute();
+                receiver.execute();
+
+            }
         }
     }
 
@@ -439,46 +346,15 @@ public class RegisterActivity extends AppCompatActivity implements LoaderCallbac
 
         @Override
         protected void onProgressUpdate(Void... values) {
+
             JSONObject obj = new JSONObject();
+            System.out.print("THIS IS HAPPENING");
             try {
                 obj.put("MSG", message);
-            }catch (Exception e){}
-
-        }
-
-    }
-
-    /**
-     * This AsyncTask sends the chat message through the output stream.
-     */
-    private class Sender extends AsyncTask<Void, Void, Boolean> {
-        JSONObject obj = new JSONObject();
-
-        private String username;
-        private String password;
-
-        @Override
-        protected Boolean doInBackground(Void... arg0) {
-            username = mUsernameView.getText().toString();
-            password = mPasswordView.getText().toString();
-            try {
-                obj.put("OPTION", "NEW_USER");
-                obj.put("USER", username);
-                obj.put("PASSWORD", password);
-                // obj.toString();
-            }catch(Exception e){}
-            printWriter.write(obj.toString() + "\n");
-            printWriter.flush();
-            return true;
-        }
-
-        @Override
-        protected void onPostExecute(Boolean success) {
-
-            mUsernameView.setText(""); // Clear the chat box
-             mPasswordView.setText(""); // Clear the chat box
-                if(success)
+               // j=true;
+               if(message.contains("true"))
                 {
+                    System.out.print("THIS IS HAPPENING too");
                     Context context = getApplicationContext();
                     CharSequence text = "Registered as new User!\n" +"Please Login.";
                     int duration = Toast.LENGTH_LONG;
@@ -487,74 +363,55 @@ public class RegisterActivity extends AppCompatActivity implements LoaderCallbac
                     Intent intent = new Intent(RegisterActivity.this, LoginActivity.class);
                     startActivity(intent);
                 }
-            else
                 {
                     mPasswordView.setError(getString(R.string.error_incorrect_password));
                     mPasswordView.requestFocus();
                 }
+            } catch (Exception e) {
+            }
+
+        }
+
+    }
+
+    /**
+     * This AsyncTask sends the chat message through the output stream.
+     */
+    private class Sender extends AsyncTask<Void, Void, Void> {
+        //   JSONObject obj = new JSONObject();
+
+        private String username;
+        private String password;
+
+        @Override
+        protected Void doInBackground(Void... params) {
+            while(true) {
+                username = mUsernameView.getText().toString();
+                password = mPasswordView.getText().toString();
+                //while (true) {
+                try {
+                    obj.put("OPTION", "NEW_USER");
+                    obj.put("USER", username);
+                    obj.put("PASSWORD", password);
+                } catch (Exception e) {
+                }
+                printWriter.write(obj.toString() + "\n");
+                printWriter.flush();
+
+            }
+        }
+
+
+        @Override
+        protected void onProgressUpdate(Void... values) {
+
+            mUsernameView.setText(""); // Clear the chat box
+             mPasswordView.setText(""); // Clear the chat box
+
 
         }
     }
 
 
-
-
-
-//    /**
-//     * Represents an asynchronous login/registration task used to authenticate
-//     * the user.
-//     */
-//    public class UserLoginTask extends AsyncTask<Void, Void, Boolean> {
-//
-//        private final String mUsername;
-//        private final String mPassword;
-//
-//        UserLoginTask(String email, String password) {
-//            mUsername = email;
-//            mPassword = password;
-//        }
-//
-//        @Override
-//        protected Boolean doInBackground(Void... params) {
-//            // TODO: attempt authentication against a network service.
-//
-//            try {
-//                // Simulate network access.
-//                Thread.sleep(2000);
-//            } catch (InterruptedException e) {
-//                return false;
-//            }
-//
-//            for (String credential : DUMMY_CREDENTIALS) {
-//                String[] pieces = credential.split(":");
-//                if (pieces[0].equals(mUsername)) {
-//                    // Account exists, return true if the password matches.
-//                    return pieces[1].equals(mPassword);
-//                }
-//            }
-//
-//            // TODO: register the new account here.
-//            return true;
-//        }
-//
-//        @Override
-//        protected void onPostExecute(final Boolean success) {
-//            mAuthTask = null;
-//            showProgress(false);
-//
-//            if (success) {
-//                finish();
-//            } else {
-//                mPasswordView.setError(getString(R.string.error_incorrect_password));
-//                mPasswordView.requestFocus();
-//            }
-//        }
-//
-//        @Override
-//        protected void onCancelled() {
-//            mAuthTask = null;
-//            showProgress(false);
-//        }
-//    }
 }
 

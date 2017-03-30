@@ -7,6 +7,8 @@ import android.database.Cursor;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.example.tharuni.synomiliachat.ChatActivity.CHAT_SERVER_IP;
 //import android.database.sqlite.SQLiteOpenHelper;
 /**
  * Created by Sagar on 22/03/2017.
@@ -71,6 +73,25 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         String[] columns = {/*TABLE COLUMNS*/};
         return mDatabase.query(DATABASE_TABLE, columns, null, null, null, null, null);
     }
+
+//
+//    public String getConnection()
+//    {
+//        Credentials c = null;
+//        openDatabase();
+//        Cursor cursor = mDatabase.rawQuery("SELECT ROWID,connection FROM USERS",null);
+//        cursor.moveToFirst();
+//        while(!cursor.isAfterLast())
+//        {
+//            c = new Credentials(cursor.getInt(0),cursor.getString(1),cursor.getString(2),cursor.getString(3),cursor.getString(4));
+//            CHAT_SERVER_IP = cursor.getString(3);
+//            System.out.println(CHAT_SERVER_IP);
+//            cursor.moveToFirst();
+//        }
+//        cursor.close();
+//        closeDatabase();
+//        return CHAT_SERVER_IP;
+//    }
 
 
 }

@@ -3,10 +3,7 @@ package com.example.tharuni.synomiliachat;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
@@ -14,27 +11,20 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
 
-import com.example.tharuni.synomiliachat.Credentials;
-import com.example.tharuni.synomiliachat.DatabaseHelper;
-import com.example.tharuni.synomiliachat.ListUsersAdapter;
-import android.R.layout;
-
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.List;
 
-public class TestActivity extends AppCompatActivity {
+public class UserListActivity extends AppCompatActivity {
 
     private ListView lvUsername;
     private ListUsersAdapter adapter;
     private List<Credentials> mUserList;
     private DatabaseHelper mDBHelper;
     private Context context;
-    //Realm mRealm;
-    //private RecyclerView mRecycler;
-    //private
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -66,19 +56,12 @@ public class TestActivity extends AppCompatActivity {
         lvUsername.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Intent intent = new Intent(TestActivity.this, ChatActivity.class);
-                context.startActivity(intent);
+                Intent intent = new Intent(UserListActivity.this, ChatActivity.class);
+                startActivity(intent);
             }
         });
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
+
     }
 
     private boolean copyDatabase(Context context) {
@@ -94,7 +77,7 @@ public class TestActivity extends AppCompatActivity {
             }
             outputStream.flush();
             outputStream.close();
-            Log.w("TestActivity","DB copied");
+            Log.w("UserListActivity","DB copied");
             return true;
         }catch (Exception e) {
             e.printStackTrace();
