@@ -1,7 +1,88 @@
 \documentclass[finalReport.tex]{subfiles}
 \begin{document}
-\chapter{Evaluation}
+\chapter{Evaluation}\label{ch:eval}
 
+The evaluation section of this report will focus on several aspects of the final project. 
+
+The mandatory features of the chat system as outlined in the initial report were as follows:
+\begin{itemize}
+\item Send text based messages to one or more users
+\item Receive text based messages from one or more users
+\item Secure communication between users
+\item Search for other users on the server
+\item User Registration (New User)
+\item User authentication (Log in / Log out)
+\item Chat client for mobile
+\item Chat client for desktop
+\end{itemize}
+	
+The final system is split into two aspects, the Android and the Python clients. As discussed in the Chapter \ref{chap:implementation}, during the implementation and the development of the two clients the team splits the project in two parts, with the sub-teams working in parallel on the python client and on the Android client. Because of this, the two platforms have differing final functionalities.
+
+To evaluate the final system, it is essential to discuss the mandatory features outlined above, and how the final system compares. Below is the evaluation of the final system (Section \ref{sec:ev:aspects}), discussing what works and what does not, changes that were made to the initial plan, the strengths and weaknesses of the members and how they worked as part of a team (Section \ref{sec:ev:problems}). In conclusion (Section \ref{sec:ev:future}) an outlining future work that could be done on the project is presented.
+
+\section{Aspects of the final project}\label{sec:ev:aspects}
+Below are the three main aspects of the project, detailing how they behave as part of the final system.
+ 
+\subsection{Server}
+The initial purpose for creating the server was for the server to act as an intermediary between the clients. The server acts as the medium for the clients to form a handshake and the final server does exactly this.
+
+The server accesses the database and is able to perform all the queries required from the client side, in order to log in, log out, register a new user, look for another user, add a contact and get the contacts of a user. 
+
+The server needs to be running and listening for open connections before users have attempted to login; once they have logged in, the server provides to the clients all the information they need to open connections with whichever user is online and whose address is stored on the database.
+
+\subsection{Python Client}
+The Python client allows users to register and login, and then open chats with other existing users in the database stored on the server, once they have been added to the user's contacts. 
+
+The registration procedure requires a user to enter their desired username, and then their password twice to ensure the user has not mistyped the password. After a user has registered, they are logged straight in to the system. 
+
+The login procedure requires a user to enter their existing username and password. Once a user has successfully logged in, a user is able to search for other users that exist on the database, and then add them as their contact. 
+
+After adding a contact, a user is able to initiate conversations with a number of other contacts, providing those contacts are online. 
+
+The user also has the ability of logging out of the system.
+
+The initial design of the desktop client in \lstinline'tkinter' incorporated a multimodal window design, each running in a separate thread. However, this proved to be an inefficient design as the \lstinline'tkinter' framework encounters issues when its windows are accessed or updated from outside threads. To overcome this, the use of \lstinline'mtkinter' framework was introduced to the development with the expectation that it would have solved the issues experienced. However, this was abandoned in favour of the improved design utilising queues detailed in the implementation.
+
+
+\subsection{Android Client}
+The login and registration procedures for the two clients are similar. On opening the application, the users are asked to login; if they do not have existing credentials, they are able to create new ones by clicking on the \textit{register} button.
+ 
+Once they have created a new user by registering (again, by entering a new username and their password twice), they can submit these details and then this takes the user back to the login page, where they are asked to login with these new credentials. 
+
+After logging in, the user is shown a list which displays the global user list of all the existing users on the database. The user is then able to click on the users in this list. Once they do this, a new window, which takes the user to the chat screen with that user, opens on the app.
+
+There were aspects of the planning that could not be fully implemented. As per the design of the system, fragments were the initial idea for the Android application, and these were added however the functionality could not be implemented. Due to the complexity imposed by Android and the lack of time, it was difficult for the Android sub-team to implement these fragment classes. Initially, three fragments were added to the GUI; one for the list of friends, another for the list of users from the global list extracted from the server and a third for the list of existing chats open by that user in that session.
+
+\subsection{The final system}
+With regards to a final, overall view of the system, it is safe to assume that most of the initial requirements laid out at the beginning of the project have been met, even though secure communication has not been implemented. It is possible to send and receive text-based messages to one or more users, search for other users on the server, register new users, authenticate users and this has all been done using chat clients developed for both mobile and desktop.
+
+The Python client is able to send and receive messages, enabling two-way communication between clients, however the same cannot be said for the Android client. Due to a lack of time near the end of the project, it was not possible to meet the this requirement for the Android client. The Android client is able to send messages however it does not receive any, making the connection one-way. The reason for this is the complexity of the queues and threading which could not be fully implemented in the final Android system.
+
+\section{Problems and changes made}\label{sec:ev:problems}
+The original plan for the team was to develop the desktop client in Java. This is because the Android client is Java-based, and the code written for the Java client could then eventually be adapted to be used for the Android client. However, at the mid-point of the project, progress for the desktop client was significantly hindered due to a lack of technical expertise in the problem domain within the team in Java. As a result of this, a decision was made by the team to develop the desktop application in Python because a larger number of members of the team was more au fait equipped in this language. This allowed more resources and more people to be involved in the process, and this accelerated the development of the application, making up for the time lost.
+
+An improvement was made to the project regarding the physical location of the database: it was initially planned to save it locally for each client; however, due to security reasons and mobility concerns, it was later decided that the database should be stored on the server, allowing the clients to query it through the server.
+
+Time management and the allocation of resources was an issue the team faced near the end of the project timeline. Due to the team members having tight schedules during the month of March, it was becoming increasingly difficult for the team to work on the project. As a result of this, the team was constrained and the team members could not focus their efforts on the project.
+
+\section{Project improvements and future works}\label{sec:ev:future}
+It would be essential to improve the user interface of the clients. Currently, they are not intuitive enough to use and not user friendly.
+
+If more time was given, the Android client would be improved and, as the initial requirements have been already implemented, the optional features outlined would have been added:
+\begin{itemize}
+\item Set status
+\item Notifications (banners on Android)
+\item Send images or files
+\item Set name/profile picture
+\item Delete user account
+\item Contact list
+\item Emojis
+\item Backup chat/chat log
+\item Remove messages
+\item Chat time stamps
+\item Customised chat background
+\item Adding multiple servers for stability and robustness
+\end{itemize}
 
 
 

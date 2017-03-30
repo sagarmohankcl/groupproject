@@ -1,0 +1,374 @@
+\documentclass[finalReport.tex]{subfiles}
+\begin{document}
+
+\chapter{Use Cases Description}\label{app:uc}
+\begin{usecase}
+
+\addtitle{Use Case 1}{Login} 
+
+\addfield{Type:}{primary}
+
+\addfield{Actors:}{Client}
+
+\addfield{Description:}{the Client inserts its credentials and enters in the main personalized page}
+
+\additemizedfield{Flow of events:}{
+	\item[1.] the Client gets the username and the password
+	\item[2.] the Client starts a connection with the Server
+	\item[3.] the Server queries the database for checking the credentials
+	\item[4.] the Server accepts the connection
+	\item[5.] the Client displays the main page of the application
+}
+
+\additemizedfield{Exceptions:}{
+	\item[-] the username and the password are empty or mismatching
+	\item[-] the server is offline
+	\item[-] connection problems}
+
+\addfield{Exit condition:}{the Server returns True or False to allow or deny the login}
+
+\addfield{Preconditions:}{the Client must be already registered}
+
+\addfield{Postconditions:}{the Client can look for contacts and starts new connections}
+
+\addfield{Nested use cases:}{1.1 Get contacts} 
+\end{usecase}
+
+
+%--------------------------------------------------------------------------------------
+\clearpage
+\begin{usecase}
+
+\addtitle{Use Case 1.1}{Get Contacts} 
+
+\addfield{Type:}{secondary}
+
+\addfield{Actors:}{Client}
+
+\addfield{Description:}{the Client receives the list of the already added contacts and sees them displayed in its main page}
+
+\additemizedfield{Flow of events:}{
+	\item[1.] the Clients queries the Server for getting its contacts
+	\item[2.] the Server gets the contact list from the database
+	\item[3.] the Server returns the contact list
+	\item[4.] the Client displays the contact list in its main page
+}
+
+\additemizedfield{Exceptions:}{  % to check
+	\item[-] the server is offline
+	\item[-] connection problems } 
+
+\addfield{Exit condition:}{the Client displays the contacts list}
+
+\addfield{Preconditions:}{the Client must be connected to the Server}
+
+\addfield{Postconditions:}{the Client can add new contacts or starts new connections}
+
+\addfield{Nested use cases:}{-} 
+\end{usecase}
+
+%---------------------------------------------------------------------
+\clearpage
+
+\begin{usecase}
+
+\addtitle{Use Case 2}{Registration} 
+
+\addfield{Type:}{primary}
+
+\addfield{Actors:}{Client}
+
+\addfield{Description:}{the Client inserts its credentials and enters in the main personalized page}
+
+\additemizedfield{Flow of events:}{
+	\item[1.] the username and the password (twice) are inserted
+	\item[2.] the connection with the Server starts
+	\item[3.] the Server queries the database for checking the uniqueness of the username
+	\item[4.] the Server accepts the connection
+	\item[5.] the main page of the application is displayed 
+}
+
+\additemizedfield{Exceptions:}{
+	\item[-] the username and the password mismatch
+	\item[-] the username already exists
+	\item[-] the server is offline
+	\item[-] connection problems } % to check
+
+\addfield{Exit condition:}{the Server returns True or False to allow or deny the registration}
+
+\addfield{Preconditions:}{-}
+
+\addfield{Postconditions:}{the Client can look for new contacts and starts new connections}
+
+\addfield{Nested use cases:}{-} 
+\end{usecase}
+
+
+%--------------------------------------------------------------------------------------
+\clearpage
+\begin{usecase}
+
+\addtitle{Use Case 3}{Add a contact} 
+
+\addfield{Type:}{primary}
+
+\addfield{Actors:}{Client}
+
+\addfield{Description:}{the Client inserts another Client's username and gets displayed the new contact; the Server saves such relationship into the database}
+
+\additemizedfield{Flow of events:}{
+	\item[1.] the other Client's username is inserted
+	\item[2.] the connection with the Server starts
+	\item[3.] the Server inserts in the database the new association
+	\item[4.] the Server returns True or False according to the success of the operation
+	\item[5.] the new contact is displayed in the Client's main page
+}
+
+\additemizedfield{Exceptions:}{
+	\item[-] the other Client is already a contact
+	\item[-] the username is missing or not registered
+	\item[-] the server is offline
+	\item[-] connection problems } % to check
+
+\addfield{Exit condition:}{the Client receives True or False and displays the contact consequently}
+
+\addfield{Preconditions:}{the Client must be logged in}
+
+\addfield{Postconditions:}{the Client can look for other contacts or starts new connections}
+
+\addfield{Nested use cases:}{3.1 Search a contact} 
+\end{usecase}
+
+
+%--------------------------------------------------------------------------------------
+\clearpage
+\begin{usecase}
+
+\addtitle{Use Case 3.1}{Search a contact} 
+
+\addfield{Type:}{secondary}
+
+\addfield{Actors:}{Client}
+
+\addfield{Description:}{the Client checks if the desired new contact exists into the database}
+
+\additemizedfield{Flow of events:}{
+	\item[1.] the Clients asks the Server about the existence of another Client given its username
+	\item[2.] the Server queries the database for checking the existence of that username
+	\item[3.] the Server returns True or False according to the success of the operation
+}
+
+\additemizedfield{Exceptions:}{
+	\item[-] the server is offline
+	\item[-] connection problems} % to check
+
+\addfield{Exit condition:}{the Client receives True or False and add the contact consequently}
+
+\addfield{Preconditions:}{the Client must be logged in}
+
+\addfield{Postconditions:}{the Client can add the contact}
+
+\addfield{Nested use cases:}{--} 
+\end{usecase}
+
+
+
+
+
+%--------------------------------------------------------------------------------------
+\clearpage
+
+
+\begin{usecase}
+
+\addtitle{Use Case 4}{Chat} 
+
+\addfield{Type:}{primary}
+
+\addfield{Actors:}{Client1, Client2}
+
+\addfield{Description:}{the Client1 starts a new connection and send/receive messages to/from Client2 }
+
+\additemizedfield{Flow of events:}{
+	\item[1.] Client1 queries the Server for getting the information about Client2's connection
+	\item[2.] the Server returns to Client1 the connection details of the Client2
+	\item[3.] Client1 opens a connection with Client2
+	\item[4.] a new tab is open in both Clients' applications
+	\item[5.] Client1 starts the conversation
+}
+
+\additemizedfield{Exceptions:}{
+	\item[-] the Client2 is offline
+	\item[-] the server is offline
+	\item[-] connection problems} % to check
+
+\addfield{Exit condition:}{Client1 opens the new connection}
+
+\additemizedfield{Preconditions:}{
+	\item[-] Client1 must be logged in
+	\item[-] Client1 must know the Client2's username
+	}
+
+\addfield{Postconditions:}{Client1 sends and receives messages to/from Client2}
+
+\additemizedfield{Nested use cases:}{
+	\item[4.1] Start a connection
+	\item[4.2] Conversation	
+	} 
+\end{usecase}
+
+%--------------------------------------------------------------------------------------
+\clearpage
+
+
+\begin{usecase}
+
+\addtitle{Use Case 4.1}{Start a connection} 
+
+\addfield{Type:}{secondary}
+
+\addfield{Actors:}{Client1, Client2}
+
+\addfield{Description:}{Client1 starts a new connection with Client2 }
+
+\additemizedfield{Flow of events:}{
+	\item[1.] Client1 selects Client2's username
+	\item[2.] Client1 asks the Server the information about Client2's connection
+	\item[3.] the Server queries the database for checking the Client2's status
+	\item[4.] the Server returns to Client1 the connection details of Client2
+	\item[5.] Client1 initiates a connection with Client2	
+	\item[6.] Client2 accepts the connection from Client1
+	\item[7.] Client2 creates a new thread for receiving data from Client1
+	\item[8.] a new tab is opened in both Clients' applications
+}
+
+\additemizedfield{Exceptions:}{
+	\item[-] Client2 is offline 
+	\item[-] the server is offline
+	\item[-] connection problems} % to check
+
+\addfield{Exit condition:}{the connection between the two Clients has started}
+
+\additemizedfield{Preconditions:}{
+	\item[-] both Clients must be logged in
+	\item[-] Client2 must be in the Client1's contacts list
+	}
+
+\addfield{Postconditions:}{a Client starts the conversation}
+
+\addfield{Nested use cases:}{-} 
+\end{usecase}
+
+
+%--------------------------------------------------------------------------------------
+\clearpage
+
+
+\begin{usecase}
+
+\addtitle{Use Case 4.2}{Conversation} 
+
+\addfield{Type:}{secondary}
+
+\addfield{Actors:}{Client1, Client2}
+
+\addfield{Description:}{Client1 sends/receives messages to/from Client2 }
+
+\additemizedfield{Flow of events:}{
+	\item[1.] Client1 writes one or more messages
+	\item[2.] Client1 sends its message to Client2
+	\item[3.] Client2 receives the message from Client1
+	\item[4.] Client2 writes one or more messages
+	\item[5.] Client2 sends its message to Client1
+	\item[6.] Client1 receives the message from Client2
+}
+
+\additemizedfield{Exceptions:}{
+	\item[-] a Client disconnects 
+	\item[-] the server is offline
+	\item[-] connection problems} % to check
+
+\addfield{Exit condition:}{a Client logs out}
+
+\additemizedfield{Preconditions:}{
+	\item[-] both Clients must be logged in
+	\item[-] there must be an open connection between the two Clients
+	}
+
+\addfield{Postconditions:}{-}
+
+\addfield{Nested use cases:}{-} 
+\end{usecase}
+
+
+%--------------------------------------------------------------------------------------
+\clearpage
+
+\begin{usecase}
+
+\addtitle{Use Case 5}{Close the application} 
+
+\addfield{Type:}{primary}
+
+\addfield{Actors:}{Client}
+
+\addfield{Description:}{the Client close the application interrupting all the active connections}
+
+\additemizedfield{Flow of events:}{
+	\item[1.] the Client wants to leave the application
+	\item[2.] the Client logs out
+	\item[3.] the Client close all the opened windows
+}
+
+\additemizedfield{Exceptions:}{
+	\item[-] the log out operation is not authorized by the Server
+	\item[-] connection problems} % to check
+
+\addfield{Exit condition:}{all the windows are closed}
+
+\addfield{Preconditions:}{the Client is logged in}
+
+\addfield{Postconditions:}{-}
+
+\addfield{Nested use cases:}{5.1 Logout} 
+\end{usecase}
+
+
+
+%--------------------------------------------------------------------------------------
+\clearpage
+
+\begin{usecase}
+
+\addtitle{Use Case 5.1}{Logout} 
+
+\addfield{Type:}{secondary}
+
+\addfield{Actors:}{Client}
+
+\addfield{Description:}{the Client disconnects from the Server and from the other Clients and leaves the application}
+
+\additemizedfield{Flow of events:}{
+	\item[1.] the Client wants to log out
+	\item[2.] the Client asks the permission to the Server
+	\item[3.] the Server queries the database for updating the connection information
+	\item[4.] the Server allows the Client to disconnect
+	\item[5.] the Client closes all the active connections with the other Clients
+}
+
+\additemizedfield{Exceptions:}{
+	\item[-] the server is offline
+	\item[-] connection problems } % to check
+
+\addfield{Exit condition:}{connection interrupted}
+
+\addfield{Preconditions:}{the Client is logged in}
+
+\addfield{Postconditions:}{the Client is disconnected to the Server and to any other Client}
+
+\addfield{Nested use cases:}{-} 
+\end{usecase}
+
+
+
+\end{document}
